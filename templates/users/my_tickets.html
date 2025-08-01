@@ -28,7 +28,7 @@
                 {% endif %}
               </div>
 
-              <div class="card-body d-flex flex-column gap-2">
+              <div class="card-body d-flex flex-column gap-2" style="filter: blur(2px); opacity: 0.5;">
                 {% for message in ticket.messages.all %}
                 <div class="ticket-message w-fit-content rounded-custom p-2 px-3 list-group-item border shadow-sm {% if message.user != request.user %}bg-light text-dark{% else %}bg-orange text-white align-self-end{% endif %}">
                   <div>{{ message.message }}</div>
