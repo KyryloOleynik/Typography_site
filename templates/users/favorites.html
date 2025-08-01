@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Личний кабінет - Обране{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="row">
+    <!-- Бокова панель -->
+    {% include "personal_cabinet_nav_pannel.html" %}
+
+    <!-- Контент сторінки "Обране" -->
+    <div class="col-md-9">
+      <h3 class="mb-3 fw-bold">Мої обрані товари</h3>
+
+      {% if user.favorites.exists %}
+      <form method="POST" action="{% url 'user:remove_selected_favorites' %}">
+        {% csrf_token %}
+
+        <!-- Панель управління -->
+        <div class="bg-light rounded-custom shadow-sm p-3 d-flex flex-wrap justify-content-between gap-2 align-items-center mb-4 border">
+          <div class="d-flex gap-2 flex-wrap">
+            <button type="button" class="btn btn-outline-primary btn-sm" onclick="selectAllCheckboxes(true)">
+              <i class="bi bi-check2-square me-1"></i> Вибрати всі
+            </button>
+            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="selectAllCheckboxes(false)">
+              <i class="bi bi-x-square me-1"></i> Скасувати вибір
+            </button>
+          </div>
+          <button type="submit" class="btn btn-outline-danger btn-sm px-3">
+            <i class="bi bi-trash3 me-1"></i> Видалити обрані
+          </button>
+        </div>
+
+        <!-- Список товарів -->
+        <div class="row g-4">
+          {% for service in user.favorites.all %}
+          <div class="col-sm-6 col-lg-4">
+            <a href="{% url 'catalog:service_detail' service.slug %}" class="card h-100 border-0 shadow-sm text-decoration-none text-transparent">
+              {% if service.image %}
+              <img src="{{ service.image.url }}" class="card-img-top" alt="{{ service.title }}">
+              {% endif %}
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title fw-semibold">{{ service.title }}</h5>
+                <p class="card-text text-muted small">{{ service.short_description|truncatewords:15 }}</p>
+
+                <div class="form-check mt-auto">
+                  <input class="form-check-input" type="checkbox" name="services" value="{{ service.slug }}" id="service_{{ service.id }}">
+                  <label class="form-check-label" for="service_{{ service.id }}">
+                    Обрати
+                  </label>
+                </div>
+              </div>
+            </a>
+          </div>
+          {% endfor %}
+        </div>
+      </form>
+      {% else %}
+        У вас ще немає обраних товарів.
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function selectAllCheckboxes(selectAll = true) {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"][name="services"]');
+    checkboxes.forEach(cb => cb.checked = selectAll);
+  }
+</script>
+{% endblock %}

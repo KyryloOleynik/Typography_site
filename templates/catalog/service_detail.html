@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}PFB Typography{% endblock %}
+
+{% block content %}
+
+<section class="pt-3">
+  <div class="container">
+    <div class="row mw-100">
+
+      <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <i class="bi bi-house-door-fill text-orange me-1"></i>
+            <a href="{% url 'main' %}" class="text-decoration-none text-secondary">PFB Typography</a>
+          </li>
+          {% for category in category_path %}
+            <li class="breadcrumb-item">
+              <a href="{% url 'catalog:category_detail' category.slug %}" class="text-decoration-none text-secondary">
+                {{ category.title }}
+              </a>
+            </li>
+          {% endfor %}
+          <li class="breadcrumb-item active" aria-current="page">
+            {{ target_service.title }}
+          </li>
+        </ol>
+      </nav>
+
+      <div class="col-md-7 mb-3">
+        <img id="mainServiceImage" src="{{ target_service.image.url }}" alt="{{ target_service.title }}"
+            class="img-fluid  rounded-custom w-100 mb-2 zoomIn">
+
+        <div class="d-flex justify-content-center flex-wrap">
+          {% for image in target_service.images %}
+            {% if image %}
+              <div class="m-1 animate__animated animate__fadeIn" style="animation-delay: 0.{{forloop.counter0}}s;">
+                <img src="{{ image.url }}" alt="Thumbnail"
+                    class=" rounded-custom border"
+                    style="width: 70px; height: 70px; object-fit: cover; cursor: pointer; opacity: 0.9;"
+                    onmouseover="this.style.opacity='1'"
+                    onmouseout="this.style.opacity='0.9'"
+                    onclick="document.getElementById('mainServiceImage').src='{{ image.url }}'">
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="col-md-5">
+        <h2 class="fw-semibold mb-3 fw-bold">{{ target_service.title }}</h2>
+        <form method="POST" action="{% url 'catalog:add_to_cart' target_service.slug %}" id="service-options" data-base-price="{{ target_service.price_from }}">
+          {% csrf_token %}
+          
+          {% for option_category in target_service.option_categories.all %}
+            <div class="mb-3">
+              <label class="form-label fw-bold text-secondary">{{ option_category.title }}:</label>
+              <select 
+                class="form-select form-select rounded-custom service-option"
+                name="option_{{ option_category.id }}"
+                required
+                data-category-id="{{ option_category.id }}"
+              >
+                {% for option in option_category.options.all %}
+                  <option 
+                    value="{{ option.id }}" 
+                    data-price="{{ option.price|default:0 }}">
+                    {{ option.title }}{% if option.price %} (+{{ option.price }} грн){% endif %}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+          {% endfor %}
+
+          <div class="mb-4 align-items-center">
+            <label for="tirazh" class="form-label fw-bold text-secondary">Тираж</label>
+            <div class="row row-cols-2">
+              <div class="col">
+                <select class="form-select form-select rounded-custom" name="tirazh" id="tirazh" required>
+                  {% for choice in quantity_choices %}
+                    <option value="{{ choice }}" {% if forloop.first %}selected{% endif %}>{{ choice }} шт</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="col">
+                <div class="text-end fw-bold fs-4 text-orange ms-3" id="final-price">
+                  {{ target_service.price_from }} грн
+                </div>
+              </div>
+            </div>
+          </div>
+
+        <div class="row row-cols-2 mb-3 g-3 justify-content-between">
+          <div class="col mb-lg-0 py-0">
+            <button type="submit" class="btn btn-outline-orange px-md-4 px-lg-5 px-4 py-2 px-sm-5 py-sm-3 py-md-2 py-lg-3 fs-6 fs-lg-5 animate__animated animate__fadeIn">
+              Придбати в 1 клік
+            </button>
+          </div>
+          <div class="col py-0 d-flex justify-content-end">
+            <button type="submit" class="btn btn-orange px-md-4 px-lg-5 px-4 py-2 px-sm-5 py-sm-3 py-md-2 py-lg-3 fs-6 fs-lg-5 animate__animated animate__fadeIn" style="animation-delay: 0.15s;">
+              Додати в кошик
+            </button>
+          </div>
+        </div>
+        </form>
+        <form method="POST" action="{% if target_service in user.favorites.all %}{% url 'user:remove_from_favorites' target_service.slug %}{% else %}{% url 'user:add_to_favorites' target_service.slug %}{% endif %}">
+          {% csrf_token %}
+
+          {% if target_service in user.favorites.all %}
+            <button type="submit" class="btn btn-orange px-5 py-3 fw-bold animate__animated animate__fadeIn w-100" style="animation-delay: 0.3s;">
+              <i class="bi bi-heart-fill text-white me-1"></i> Видалити з обраного
+            </button>
+
+          {% else %}
+            <button type="submit" class="btn btn-orange px-5 py-3 fw-bold animate__animated animate__fadeIn w-100" style="animation-delay: 0.3s;">
+              <i class="bi bi-heart text-white me-1"></i> Додати до обраного
+            </button>
+          {% endif %}
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="mt-4 border-top border-3 bg-light">
+    <div class="container pt-4">
+      <h4 class="fw-semibold mb-3 pt-2">Опис послуги:</h4>
+      <p>
+        {% if target_service.description %}
+          {{ target_service.description|linebreaks }}
+        {% else %}
+          Ми пропонуємо повний спектр поліграфічних послуг: від дизайну макета до друку готової продукції.
+        {% endif %}
+      </p>
+
+      <h5 class="fw-semibold mt-4 mb-2">Деталі</h5>
+      <p class="text-muted small pb-3 m-0">
+        Матеріали забезпечують високу якість друку. Зверніться до нас для консультації щодо оптимального вибору.
+      </p>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const serviceOptionsForm = document.getElementById('service-options');
+  const basePriceRaw = serviceOptionsForm ? serviceOptionsForm.dataset.basePrice : null;
+  const basePrice = parseFloat(basePriceRaw);
+  console.log('Base price:', basePriceRaw, basePrice);
+
+  const optionSelects = document.querySelectorAll('.service-option');
+  console.log('Option selects found:', optionSelects.length);
+
+  const tirazhSelect = document.getElementById('tirazh');
+  console.log('Tirazh select found:', !!tirazhSelect);
+
+  const priceDisplay = document.getElementById('final-price');
+
+  if (isNaN(basePrice)) {
+    console.error('Base price is not a number!');
+    return;
+  }
+  if (!tirazhSelect || optionSelects.length === 0 || !priceDisplay) {
+    console.error('Necessary DOM elements not found');
+    return;
+  }
+
+  const tirazhOptions = tirazhSelect.querySelectorAll('option');
+  const tirazhMultipliers = {};
+
+  const firstValue = parseFloat(tirazhOptions[0].value);
+
+  tirazhOptions.forEach(option => {
+    const val = parseFloat(option.value);
+    tirazhMultipliers[val] = val / firstValue;
+  });
+
+  function calculateTotalPrice() {
+    let optionsTotal = 0;
+
+    optionSelects.forEach(select => {
+      const selectedOption = select.options[select.selectedIndex];
+      if (!selectedOption) {
+        console.warn('No selected option found for select:', select);
+        return;
+      }
+      const price = parseFloat(selectedOption.dataset.price) || 0;
+      optionsTotal += price;
+    });
+
+    const tirazh = parseInt(tirazhSelect.value) || 500;
+    const multiplier = tirazhMultipliers[tirazh] || 1;
+
+    const totalPrice = (basePrice + optionsTotal) * multiplier;
+
+    priceDisplay.textContent = `${totalPrice.toFixed(2)} грн`;
+
+    updateTirazhOptions(optionsTotal);
+  }
+
+  function updateTirazhOptions(optionsTotal = 0) {
+    [...tirazhSelect.options].forEach(opt => {
+      const qty = parseInt(opt.value);
+      const multiplier = tirazhMultipliers[qty] || 1;
+      const price = (basePrice + optionsTotal) * multiplier;
+      opt.textContent = `${qty} шт – ${price.toFixed(2)} грн`;
+    });
+  }
+
+  optionSelects.forEach(select => select.addEventListener('change', calculateTotalPrice));
+  tirazhSelect.addEventListener('change', calculateTotalPrice);
+
+  calculateTotalPrice();
+});
+</script>
+{% endblock %}

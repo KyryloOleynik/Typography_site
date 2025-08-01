@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Помилка сервера{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="text-center">
+    <img src="" alt="500" class="img-fluid" style="max-width: 400px;">
+    <h1 class="display-4 fw-bold text-danger mt-4">Вибачте! Щось пішло не так</h1>
+    <p class="text-muted">Ми вже працюємо над вирішенням проблеми. Спробуйте пізніше.</p>
+    <a href="{% url 'main' %}" class="btn btn-orange mt-3">
+      <i class="bi bi-arrow-clockwise me-1"></i> Спробувати знову
+    </a>
+  </div>
+</div>
+{% endblock %}

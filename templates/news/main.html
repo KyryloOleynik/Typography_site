@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}PFB Typography{% endblock %}
+
+{% block content %}
+<section class="container pt-3">
+    <div class="row mw-100">
+        <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb" class="mb-1">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <i class="bi bi-house-door-fill text-orange me-1"></i>
+                    <a href="{% url 'main' %}" class="text-decoration-none text-secondary">PFB Typography</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    Новини
+                </li>
+            </ol>
+        </nav>
+
+        <h2 class="fw-bold mb-4">Новини</h2>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4 mb-5">
+        {% for item in news %}
+        <div class="col">
+            <div class="card border-0 rounded-custom overflow-hidden shadow-sm position-relative h-100">
+                <div class="ratio ratio-1x1">
+                    <img src="{{ item.image.url }}" class="img-fluid object-fit-cover" alt="{{ item.title }}">
+                </div>
+                <div class="position-absolute bottom-0 start-0 w-100 bg-white bg-opacity-50 text-dark p-3 blur-effect-weak">
+                    <h6 class="mb-1">{{ item.title }}</h6>
+                    <small class="d-block"><i class="bi bi-calendar4-week me-2"></i>{{ item.created_at|date:"d.m.Y" }}</small>
+                </div>
+                <a href="{% url 'news:view_news' item.slug %}" class="stretched-link"></a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col">
+            <p class="text-muted">Наразі новин немає.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    
+    <!-- Пагинация -->
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="News pagination">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1" aria-label="Перша">
+                    <span aria-hidden="true">&laquo;&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Попередня">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled"><span class="page-link">&laquo;&laquo;</span></li>
+            <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% elif num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %}
+                    <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Наступна">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Остання">
+                    <span aria-hidden="true">&raquo;&raquo;</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+            <li class="page-item disabled"><span class="page-link">&raquo;&raquo;</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</section>
+{% endblock %}

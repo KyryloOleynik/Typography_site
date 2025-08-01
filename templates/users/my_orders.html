@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="row">
+    {% include "personal_cabinet_nav_pannel.html" %}
+
+    <div class="col-md-9">
+      <h3 class="fw-bold mb-3">Мої замовлення</h3>
+
+      {% if user_orders %}
+        <div class="row row-cols-1 g-3">
+          {% for order in user_orders %}
+            <div class="col">
+              <div class="card shadow-sm border-0 rounded-custom h-100">
+                <div class="card-header d-flex justify-content-between align-items-center px-3 py-2">
+                  <div>
+                    <strong class="text-secondary">Замовлення №{{ order.id }}</strong>
+                  </div>
+                  <small class="text-muted">{{ order.created_at|date:"d.m.Y H:i" }}</small>
+                </div>
+                <div class="card-body py-2 pb-3 px-3">
+                  <p class="mb-1"><strong>Статус:</strong> {{ order.get_status_display  }}</p>
+                  <p class="mb-1"><strong>Сума:</strong> {{ order.total_price }} грн</p>
+                  {% if order.comment %}
+                    <p class="mb-1"><strong>Коментар:</strong> {{ order.comment }}</p>
+                  {% endif %}
+                  <a href="#" class="btn btn-sm btn-outline-orange mt-2" data-order-id="{{ order.id }}" onclick="loadOrderDetails(event)">Детальніше</a>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        У вас ще немає замовлень.
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Модальне вікно -->
+<div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-labelledby="orderDetailsLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-content blur-opacity-effect">
+      <div class="modal-header">
+        <h5 class="modal-title" id="orderDetailsLabel">Деталі замовлення</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрити"></button>
+      </div>
+      <div class="modal-body">
+        <div id="orderDetailsContent">
+          <!-- Контент заповнюється через JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+async function loadOrderDetails(event) {
+    event.preventDefault();
+    const btn = event.currentTarget;
+    const orderId = btn.getAttribute('data-order-id');
+    const domain = window.location.origin;
+
+    try {
+        const response = await fetch(`${domain}/account/order-detail/${orderId}/`);
+        if (!response.ok) throw new Error("Помилка при отриманні замовлення");
+
+        const data = await response.json();
+
+        const content = document.getElementById("orderDetailsContent");
+        content.innerHTML = `
+          <div class="container-fluid px-2 py-2 pb-3">
+            <h6 class="fw-bold mb-3 text-break">Деталі замовлення <span class="text-orange">#${data.id}</span></h6>
+
+            <div class="mb-3 d-flex flex-wrap gap-2 align-items-center">
+              <span class="badge border border-2 border-orange rounded-custom text-orange fw-semibold px-2 py-1 text-wrap">
+                Статус: ${data.status}
+              </span>
+              <span class="badge bg-orange border border-2 border-orange text-white rounded-custom fw-semibold px-2 py-1 text-wrap">
+                Сума: ${data.total_price.toFixed(2)} грн
+              </span>
+            </div>
+
+            <h6 class="fw-semibold mb-3 small">Позиції замовлення:</h6>
+
+            <div class="row row-cols-1 g-2 pb-1">
+              ${data.items.map(item => `
+                <div class="col">
+                  <div class="card shadow-sm border-0 rounded-custom h-100">
+                    <div class="card-body py-2 px-3">
+                      <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start gap-2 mb-2">
+                        <div>
+                          <a href="${domain}/catalog/service/${item.service_slug}/" class="text-decoration-none text-transparent">
+                            <div class="fw-bold fs-6 text-break">${item.name}</div>
+                          </a>
+                          <small class="text-secondary">
+                            Кількість: ${item.quantity}, Ціна: ${item.price.toFixed(2)} грн
+                          </small>
+                        </div>
+                        <span class="badge bg-orange rounded-pill px-3 py-1 fs-7 align-self-sm-center">
+                          ${item.total_price.toFixed(2)} грн
+                        </span>
+                      </div>
+
+                      ${item.options.length > 0 ? `
+                        <div class="mt-1">
+                          ${item.options.map(opt => `
+                            <span class="badge bg-light text-dark rounded-custom hover-card-effect d-inline-block mb-1 me-1 small" style="background-color: rgba(255, 255, 255, 0.3) !important;">
+                              <strong>${opt.category}:</strong> ${opt.title}
+                              ${opt.price ? `<small class="text-muted ms-1">+${opt.price.toFixed(2)} грн</small>` : ''}
+                            </span>
+                          `).join('')}
+                        </div>
+                      ` : ''}
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+
+        const modal = new bootstrap.Modal(document.getElementById('orderDetailsModal'));
+        modal.show();
+    } catch(error) {
+        alert('Не вдалося завантажити данні замовлення');
+        console.error(error);
+    }
+}
+</script>
+{% endblock %}

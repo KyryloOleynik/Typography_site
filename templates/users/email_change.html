@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Зміна електронної пошти{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="row">
+    {% include "personal_cabinet_nav_pannel.html" %}
+
+    <div class="col-md-9">
+      <div class="card shadow-sm border-0 rounded-custom">
+        <div class="card-body">
+          <h4 class="fw-bold mb-4">Зміна електронної пошти</h4>
+
+          <div class="border rounded bg-light p-4 shadow-sm mb-2">
+            <p>Введіть нову електронну адресу, яку хочете встановити для свого акаунта.</p>
+
+            <form method="POST" novalidate>
+              {% csrf_token %}
+
+              {% if errors %}
+                <div class="mb-3 p-3 rounded error-message-registration shadow-sm zoomIn hover-card-effect bg-danger bg-opacity-10 border border-danger">
+                  {% for error in errors %}
+                    <div class="fw-semibold text-danger">{{ error }}</div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+
+              <div class="mb-3">
+                <label for="email" class="form-label fw-semibold">Нова електронна адреса</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    class="form-control{% if email_error %} is-invalid{% endif %}"
+                    value="{{ email|default:'' }}"
+                    required
+                    autofocus
+                  >
+                </div>
+                {% if email_error %}
+                  <div class="invalid-feedback">{{ email_error }}</div>
+                {% endif %}
+              </div>
+
+              <button type="submit" class="btn btn-orange fw-bold w-100 py-2">
+                Зберегти нову електронну адресу
+              </button>
+            </form>
+          </div>
+
+          <div class="text-muted small pt-1">
+            Зверніть увагу, після зміни електронної пошти може знадобитися підтвердження нової адреси.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

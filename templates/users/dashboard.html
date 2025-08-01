@@ -1,0 +1,368 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Личный кабинет{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="row">
+    {% include "personal_cabinet_nav_pannel.html" %}
+
+    <!-- Основной контент -->
+    <div class="col-md-9">
+        <div class="card shadow-sm border-0 rounded-custom">
+            <div class="card-body">
+                <h4 class="fw-bold mb-4">Загальні налаштування</h4>
+
+                <div class="border rounded bg-light p-4 shadow-sm mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold m-0">Особисті дані</h6>
+                    <!-- Кнопка открытия модального окна -->
+                    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editProfileModal" id="ChageUserData">
+                        <i class="bi bi-pencil me-1"></i> Редагувати
+                    </button>
+                    </div>
+
+                    <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label mb-0 text-muted">Ім’я</label>
+                        <p class="fw-semibold">{{ user.first_name|default:"—" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label mb-0 text-muted">Прізвище</label>
+                        <p class="fw-semibold">{{ user.last_name|default:"—" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label mb-0 text-muted">По батькові</label>
+                        <p class="fw-semibold">{{ user.middle_name|default:"—" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label mb-0 text-muted">Телефон</label>
+                        <p class="fw-semibold">{{ user.phone|default:"—" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label mb-0 text-muted">Електронна пошта</label>
+                        <p class="fw-semibold">{{ user.email }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label mb-0 text-muted">Пароль</label>
+                        <div class="d-flex align-items-center">
+                        <p class="fw-semibold mb-0">••••••••</p>
+                        <a href="{% url 'user:password_change' %}" class="ms-3 btn btn-sm btn-outline-secondary">Змінити пароль</a>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+                <!-- телеграм-бот -->
+                <div class="border rounded bg-light p-4 shadow-sm">
+                    <h6 class="fw-bold mb-2">Підключитись телеграм бота</h6>
+                    <p>Для підключення до каналу введіть нашому боту команду <code>/login</code>.</p>
+                    <p>Бота можна знайти за посиланням: 
+                    <a href="" target="_blank" class="fw-bold">@PFBBot</a>
+                    </p>
+                    <a href="" target="_blank" class="btn btn-sm btn-orange">
+                    <i class="bi bi-telegram me-1"></i> Підключити
+                    </a>
+                </div>
+
+                <!-- Отримувачі -->
+                <div class="border rounded bg-light p-4 shadow-sm mt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold m-0">Отримувачі</h5>
+                        <button class="btn btn-orange btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#addRecipientModal">
+                            <i class="bi bi-plus-circle me-1"></i> Додати отримувача
+                        </button>
+                    </div>
+
+                    {% if user.recipients.all %}
+                    <div class="row g-3">
+                        {% for recipient in user.recipients.all %}
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm rounded-custom h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="fw-bold mb-1">{{ recipient.last_name }} {{ recipient.first_name }} {{ recipient.middle_name }}</h6>
+                                            <p class="text-muted mb-2 small"><i class="bi bi-telephone me-1"></i>{{ recipient.phone }}</p>
+                                        </div>
+                                        <div class="btn-group gap-2 d-flex flex-column flex-sm-row flex-md-column flex-lg-row">
+                                            <!-- Кнопка редагування -->
+                                            <button class="btn btn-sm btn-outline-primary rounded-pill edit-recipient-btn"
+                                                    data-recipient-id="{{ recipient.id }}"
+                                                    data-first-name="{{ recipient.first_name }}"
+                                                    data-last-name="{{ recipient.last_name }}"
+                                                    data-middle-name="{{ recipient.middle_name }}"
+                                                    data-phone="{{ recipient.phone }}"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#editRecipientModal">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+
+                                            <!-- Кнопка видалення (з вызовом единого модального окна) -->
+                                            <button class="btn btn-sm btn-outline-danger rounded-pill delete-recipient-btn"
+                                                    data-recipient-id="{{ recipient.id }}"
+                                                    data-recipient-name="{{ recipient.last_name }} {{ recipient.first_name }}"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#deleteRecipientModal">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0">Отримувачі ще не додані.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+<!-- Модальное окно -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content shadow blur-opacity-effect">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="editProfileModalLabel">Редагувати особисті дані</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрити"></button>
+      </div>
+    <form method="POST" action="{% url 'user:update_profile' %}">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="mb-3 p-3 rounded error-message-registration shadow-sm zoomIn hover-card-effect">
+                {% for error in form.non_field_errors %}
+                <div class="fw-semibold">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <div class="modal-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="{{ form.first_name.id_for_label }}" class="form-label">Ім’я</label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.first_name.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="col-md-6">
+                    <label for="{{ form.last_name.id_for_label }}" class="form-label">Прізвище</label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.last_name.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="col-md-6">
+                    <label for="{{ form.middle_name.id_for_label }}" class="form-label">По батькові</label>
+                    {{ form.middle_name }}
+                    {% if form.middle_name.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.middle_name.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="col-md-6">
+                    <label for="{{ form.phone.id_for_label }}" class="form-label">Телефон</label>
+                    {{ form.phone }}
+                    {% if form.phone.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.phone.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+            <button type="submit" class="btn btn-success">Зберегти</button>
+        </div>
+    </form>
+    </div>
+  </div>
+</div>
+
+<!-- Универсальное модальное окно подтверждения удаления -->
+<div class="modal fade" id="deleteRecipientModal" tabindex="-1" aria-labelledby="deleteRecipientModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-custom blur-opacity-effect">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteRecipientModalLabel">Підтвердження видалення</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрити"></button>
+            </div>
+            <div class="modal-body">
+                Ви впевнені, що хочете видалити отримувача <strong id="recipientNameToDelete"></strong>?
+            </div>
+            <div class="modal-footer">
+                <form method="post" action="{% url 'user:delete_recipient' %}" id="deleteRecipientForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="recipient_id" id="deleteRecipientId" value="">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+                    <button type="submit" class="btn btn-danger">Видалити</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальне вікно редагування -->
+<div class="modal fade" id="editRecipientModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow blur-opacity-effect">
+      <div class="modal-header">
+        <h5 class="modal-title">Редагувати отримувача</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрити"></button>
+      </div>
+
+      <form method="POST" action="{% url 'user:update_recipient' %}">
+        {% csrf_token %}
+        <input type="hidden" name="recipient_id" id="recipientIdInput">
+
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="{{ recipient_form_edit.last_name.id_for_label }}" class="form-label">Прізвище</label>
+            {{ recipient_form_edit.last_name }}
+            {% if recipient_form_edit.last_name.errors %}
+              <div class="invalid-feedback d-block">{{ recipient_form_edit.last_name.errors.0 }}</div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="{{ recipient_form_edit.first_name.id_for_label }}" class="form-label">Ім’я</label>
+            {{ recipient_form_edit.first_name }}
+            {% if recipient_form_edit.first_name.errors %}
+              <div class="invalid-feedback d-block">{{ recipient_form_edit.first_name.errors.0 }}</div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="{{ recipient_form_edit.middle_name.id_for_label }}" class="form-label">По батькові</label>
+            {{ recipient_form_edit.middle_name }}
+            {% if recipient_form_edit.middle_name.errors %}
+              <div class="invalid-feedback d-block">{{ recipient_form_edit.middle_name.errors.0 }}</div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="{{ recipient_form_edit.phone.id_for_label }}" class="form-label">Телефон</label>
+            {{ recipient_form_edit.phone }}
+            {% if recipient_form_edit.phone.errors %}
+              <div class="invalid-feedback d-block">{{ recipient_form_edit.phone.errors.0 }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+          <button type="submit" class="btn btn-success">Зберегти</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Модальне вікно: Додати отримувача -->
+<div class="modal fade" id="addRecipientModal" tabindex="-1" aria-labelledby="addRecipientModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow blur-opacity-effect">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addRecipientModalLabel">Додати нового отримувача</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрити"></button>
+      </div>
+      <form method="POST" action="{% url 'user:add_recipient' %}">
+        {% csrf_token %}
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="{{ recipient_form.last_name.id_for_label }}" class="form-label">Прізвище</label>
+            {{ recipient_form.last_name }}
+            {% if recipient_form.last_name.errors %}
+              <div class="invalid-feedback d-block">{{ recipient_form.last_name.errors.0 }}</div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="{{ recipient_form.first_name.id_for_label }}" class="form-label">Ім’я</label>
+            {{ recipient_form.first_name }}
+            {% if recipient_form.first_name.errors %}
+              <div class="invalid-feedback d-block">{{ recipient_form.first_name.errors.0 }}</div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="{{ recipient_form.middle_name.id_for_label }}" class="form-label">По батькові</label>
+            {{ recipient_form.middle_name }}
+            {% if recipient_form.middle_name.errors %}
+              <div class="invalid-feedback d-block">{{ recipient_form.middle_name.errors.0 }}</div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="{{ recipient_form.phone.id_for_label }}" class="form-label">Телефон</label>
+            {{ recipient_form.phone }}
+            {% if recipient_form.phone.errors %}
+              <div class="invalid-feedback d-block">{{ recipient_form.phone.errors.0 }}</div>
+            {% endif %}
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+          <button type="submit" class="btn btn-success">Зберегти</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const editButtons = document.querySelectorAll('.edit-recipient-btn');
+    const idInput = document.getElementById('recipientIdInput');
+    const editRecipientModal = document.getElementById('editRecipientModal');
+    const firstNameInput = editRecipientModal.querySelector('#id_first_name');
+    const lastNameInput = editRecipientModal.querySelector('#id_last_name');
+    const middleNameInput = editRecipientModal.querySelector('#id_middle_name');
+    const phoneInput = editRecipientModal.querySelector('#id_phone');
+
+    editButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const recipientId = button.dataset.recipientId;
+        const firstName = button.dataset.firstName;
+        const lastName = button.dataset.lastName;
+        const middleName = button.dataset.middleName;
+        const phone = button.dataset.phone;
+
+        idInput.value = recipientId;
+        firstNameInput.value = firstName;
+        lastNameInput.value = lastName;
+        middleNameInput.value = middleName;
+        phoneInput.value = phone;
+      });
+    });
+
+    const deleteButtons = document.querySelectorAll('.delete-recipient-btn');
+    const deleteRecipientModal = document.getElementById('deleteRecipientModal');
+    const recipientNameSpan = document.getElementById('recipientNameToDelete');
+    const recipientIdInput = document.getElementById('deleteRecipientId');
+
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const recipientId = button.getAttribute('data-recipient-id');
+            const recipientName = button.getAttribute('data-recipient-name');
+
+            recipientNameSpan.textContent = recipientName;
+            recipientIdInput.value = recipientId;
+        });
+    });
+  });
+</script>
+{% endblock %}

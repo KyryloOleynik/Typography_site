@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ target_news.title }} | PFB Typography{% endblock %}
+
+{% block content %}
+<section class="pt-3">
+  <div class="container">
+    <div class="row mw-100">
+
+      <!-- Хлебные крошки -->
+      <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <i class="bi bi-house-door-fill text-orange me-1"></i>
+            <a href="{% url 'main' %}" class="text-decoration-none text-secondary">PFB Typography</a>
+          </li>
+          <li class="breadcrumb-item">
+            <a href="{% url 'news:main_news' %}" class="text-decoration-none text-secondary">Новини</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">
+            {{ target_news.title }}
+          </li>
+        </ol>
+      </nav>
+
+      <!-- Контент новини -->
+      <div class="col-md-7 mb-3">
+        {% if target_news.image %}
+        <img id="mainNewsImage" src="{{ target_news.image.url }}" alt="{{ target_news.title }}"
+             class="img-fluid rounded-custom w-100 mb-2 zoomIn">
+        {% endif %}
+      </div>
+
+      <div class="col-md-5 d-flex flex-column justify-content-center">
+        <h2 class="fw-semibold mb-3 fw-bold">{{ target_news.title }}</h2>
+        <p class="text-muted small mb-3">
+          Опубліковано: {{ target_news.created_at|date:"j E Y" }}
+        </p>
+
+        <div class="w-100 d-flex justify-content-start flex-wrap">
+          <a href="{% url 'news:main_news' %}" class="btn btn-outline-orange px-4 py-2 fw-bold animate__animated animate__fadeIn mb-2">
+            Назад до новин
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Основний текст -->
+  <div class="mt-4 border-top border-bottom border-3 bg-light">
+    <div class="container py-4 overflow-hidden">
+      <div class="news-content fs-5">
+        {{ target_news.content|safe }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Рекомендовані новини -->
+  {% if recomended_news %}
+  <div class="container pb-3 pt-4">
+    <h4 class="fw-semibold mb-3 mt-2">Рекомендовані новини</h4>
+    <div class="row">
+      {% for news in recomended_news %}
+        <div class="col-lg-3 col-sm-6 mb-4">
+            <div class="card border-0 rounded-custom overflow-hidden shadow-sm position-relative h-100 zoomIn" style="animation-delay: 0.{{ forloop.counter0 }}s;">
+                <div class="ratio ratio-1x1">
+                    <img src="{{ news.image.url }}" class="img-fluid object-fit-cover" alt="{{ news.title }}">
+                </div>
+                <div class="position-absolute bottom-0 start-0 w-100 bg-white bg-opacity-50 text-dark p-3 blur-effect-weak">
+                    <h6 class="mb-1">{{ news.title }}</h6>
+                    <small class="d-block"><i class="bi bi-calendar4-week me-2"></i>{{ news.created_at|date:"d.m.Y" }}</small>
+                </div>
+                <a href="{% url 'news:view_news' news.slug %}" class="stretched-link"></a>
+            </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const newsContent = document.querySelector('.news-content'); 
+
+  const allP = newsContent.querySelectorAll('p');
+  const allImages = newsContent.querySelectorAll('img');
+  const tables = newsContent.querySelectorAll('table');
+
+  tables.forEach(table => {
+    if (table.querySelector('img')) {
+      table.querySelectorAll('td, th, tr').forEach(cell => {
+        cell.style.setProperty('border-bottom', 'none', 'important');
+      });
+    }
+  });
+
+  allP.forEach(p => {
+    if (p.innerText.trim() === "") {
+      p.remove();
+    }
+  });
+
+  allImages.forEach(img => {
+    img.style.setProperty('height', 'auto', 'important');
+    img.classList.add('rounded-custom', 'w-100');
+    img.parentElement.classList.add('mx-auto');
+  });
+
+  const lastNewsContentChild = newsContent.children[newsContent.children.length - 1];
+  if (lastNewsContentChild.tagName === "P") {
+    const br = lastNewsContentChild.querySelector('br');
+    if (br) br.remove();
+  }
+});
+</script>
+{% endblock %}

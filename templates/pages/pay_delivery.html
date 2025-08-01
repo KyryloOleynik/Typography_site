@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Оплата / Доставка – PFB Typography{% endblock %}
+
+{% block content %}
+
+<section class="container my-5">
+  <h2 class="text-center fw-bold mb-5 fadeInDown"><i class="bi bi-truck text-orange me-2"></i>Доставка та Оплата</h2>
+  
+  <div class="row g-4">
+    <!-- Доставка -->
+    <div class="col-md-6 fadeInLeft" style="animation-delay: 0.1s;">
+      <div class="p-4 border rounded shadow-sm h-100">
+        <h4 class="mb-3"><i class="bi bi-box-seam text-orange me-2"></i>Умови доставки</h4>
+        <ul class="text-secondary ps-3 mb-0">
+          <li><i class="bi bi-dot text-orange me-1"></i><strong>Нова Пошта</strong> – доставка по всій Україні протягом 1–3 днів</li>
+          <li><i class="bi bi-dot text-orange me-1"></i><strong>Самовивіз</strong> – з нашого офісу у м. Дніпро</li>
+          <li><i class="bi bi-dot text-orange me-1"></i><strong>Кур’єр</strong> – по Дніпру в межах 24 годин</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Оплата -->
+    <div class="col-md-6 fadeInRight" style="animation-delay: 0.2s;">
+      <div class="p-4 border rounded shadow-sm h-100">
+        <h4 class="mb-3"><i class="bi bi-credit-card text-orange me-2"></i>Методи оплати</h4>
+        <ul class="text-secondary ps-3 mb-0">
+          <li><i class="bi bi-dot text-orange me-1"></i><strong>Готівка</strong> при самовивозі або кур’єрській доставці</li>
+          <li><i class="bi bi-dot text-orange me-1"></i><strong>Банківський переказ</strong> – рахунок ФОП або ТОВ</li>
+          <li><i class="bi bi-dot text-orange me-1"></i><strong>Оплата карткою</strong> – Visa / MasterCard через LiqPay</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Примітка -->
+  <div class="mt-4 text-center text-secondary fadeInUp" style="animation-delay: 0.3s;">
+    <i class="bi bi-info-circle me-2"></i>З усіх питань щодо оплати та доставки звертайтесь до нашої підтримки за телефоном або у чаті.
+  </div>
+</section>
+
+{% endblock %}

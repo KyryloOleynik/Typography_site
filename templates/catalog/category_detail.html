@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}PFB Typography - Каталог{% endblock %}
+
+{% block content %}
+
+<div class="container pt-3">
+    <div class="row">
+        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb" class="mb-2">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><i class="bi bi-house-door-fill text-orange me-2"></i><a href="{% url 'main' %}" class="text-decoration-none text-secondary">PFB Typography</a></li>
+                {% for category in category_path %}
+                    <li class="breadcrumb-item {% if forloop.last %}active{% endif %}" {% if forloop.last %}aria-current="page"{% endif %}>
+                        {% if not forloop.last %}
+                            <a class="text-decoration-none text-secondary" href="{% url 'catalog:category_detail' category.slug %}">
+                                {{ category.title }}
+                            </a>
+                        {% else %}
+                            {{ category.title }}
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ol>
+        </nav>
+
+        <div class="h1 p-5 bg-orange-transparent  rounded-custom mb-4">
+            {% if target_category %}
+                <h2>{{ target_category.title }}</h2>
+            {% else %}
+                <h2>Всі послуги</h2>
+            {% endif %}
+        </div>
+
+            <!-- Левая колонка: Категории и подкатегории -->
+            <div class="col-md-4 mb-4">
+                <h5 class="mb-3">Категорії</h5>
+                <ul class="list-group">
+                    {% for maincategory in maincategories %}
+                        <li class="list-group-item rounded-3 static px-1 pb-1">
+                            <a class="text-decoration-none ms-2 text-secondary" href="{% url 'catalog:category_detail' maincategory.slug %}">{{ maincategory.title }}</a>
+                                <ul class="list-group mt-2">
+                                    {% for category in maincategory.children.all %}
+                                        <li class="list-group-item static rounded-3 border-top mb-1 px-1 pb-1">
+                                            <a class="text-decoration-none text-secondary ms-2" href="{% url 'catalog:category_detail' category.slug %}">{{ category.title }}</a>
+                                                <ul class="list-group mt-2">
+                                                    {% for subcategory in category.children.all %}
+                                                        <li class="mb-1 list-group-item rounded-custom list-group-item-action border shadow-sm">
+                                                            <a class="text-decoration-none text-secondary"  href="{% url 'catalog:category_detail' subcategory.slug %}">{{ subcategory.title }}</a>
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Правая колонка: Название категории и товары -->
+            <div class="col-md-8">
+
+                <!-- Горизонтальный скролл карточек -->
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-2 row-cols-xl-3 g-4">
+                {% if not target_category.is_main %}
+                    {% for service in services %}
+                    <div class="col">
+                        <div class="card d-flex justify-content-between shadow-sm border-2 h-100 px-2 position-relative mb-2 {% if not service.is_active %}opacity-50{% endif %} animate__animated animate__zoomIn" style="animation-delay: 0.{{forloop.counter0}}s;">
+                
+                            <div class="image-wrapper d-flex align-items-center justify-content-center bg-white">
+                                <img src="{{ service.image.url }}" class="card-img-top img-fluid" alt="{{ service.title }}"
+                                    onerror="this.src='{% static 'images/no-image.png' %}'">
+                            </div>
+
+                            <div class="card-body d-flex flex-column" style="flex: unset !important;">
+                                <a href="{% url 'catalog:service_detail' service.slug %}" class="card-title mb-1 h5 text-decoration-none text-dark">{{ service.title }}</a>
+                                <p class="card-text text-muted mb-2">{{ service.description|striptags|truncatechars:80 }}</p>
+
+                                {% if service.is_active %}
+                                <p class="fw-bold mb-2">
+                                    от {{ service.price_from|floatformat:2 }} ₴
+                                </p>
+                                <a href="{% url 'catalog:service_detail' service.slug %}" class="btn btn-outline-orange btn-sm w-100">
+                                    Замовити
+                                </a>
+                                {% else %}
+                                <p class="fw-bold mb-2 text-secondary">
+                                    от {{ service.price_from|floatformat:2 }} ₴
+                                </p>
+                                <a href="{% url 'catalog:service_detail' service.slug %}" class="btn btn-outline-secondary btn-sm w-100" disabled>
+                                    Недоступно
+                                </a>
+                                {% endif %}
+                            </div>
+
+                            {% if not service.is_active %}
+                                <div class="position-absolute top-0 start-0 bg-danger text-white px-2 py-1 small">
+                                Недоступно
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% empty %}
+                        <p>Нема послуг цієї категорії.</p>
+                    {% endfor %}
+                {% else %}
+                    {% for category in target_category.children.all %}
+                    <div class="col">
+                        <div class="card d-flex justify-content-between shadow-sm border-2 h-100 px-2 position-relative mb-2 animate__animated animate__zoomIn" style="animation-delay: 0.{{forloop.counter0}}s;">
+                
+                            <div class="image-wrapper d-flex align-items-center justify-content-center bg-white">
+                                <img src="{{ category.image.url }}" class="card-img-top img-fluid" alt="{{ category.title }}"
+                                    onerror="this.src='{% static 'images/no-image.png' %}'">
+                            </div>
+
+                            <div class="card-body d-flex flex-column" style="flex: unset !important;">
+                                <h5 class="card-title mb-4">{{ category.title }}</h5>
+                                <a href="{% url 'catalog:category_detail' category.slug %}" class="btn btn-orange">Докладніше</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                        <p>Нема послуг цієї категорії.</p>
+                    {% endfor %}
+                {% endif %}
+                </div>
+            </div>
+
+    </div>
+</div>
+
+{% endblock %}

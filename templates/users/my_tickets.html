@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="row">
+    {% include "personal_cabinet_nav_pannel.html" %}
+    <div class="col-md-9">
+      <h3 class="fw-bold mb-3">Мої звернення</h3>
+      {% if request.user.tickets.all %}
+      <div class="row row-cols-1 row-cols-md-3 g-3">
+        {% for ticket in request.user.tickets.all %}
+          <div class="col">
+            <div class="card h-100 shadow ticket-card static rounded-custom {% if ticket.status == 'closed' %} opacity-50 cursor-not-allowed{% endif %}" data-ticket-id="{{ ticket.id }}" style="max-height: 295px;">
+              
+              <div class="card-header d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                  {% if ticket.status != 'closed' %}
+                    <span class="bg-success rounded-circle me-2"
+                          style="width: .75rem; height: .75rem; display: inline-block;"></span>
+                  {% endif %}
+                  <strong class="{% if ticket.status == 'closed' %}text-muted{% endif %}">
+                    {{ ticket }}
+                  </strong>
+                </div>
+                {% if ticket.created_at %}
+                  <small class="text-muted">{{ ticket.created_at|date:"d.m.Y H:i" }}</small>
+                {% endif %}
+              </div>
+
+              <div class="card-body d-flex flex-column gap-2">
+                {% for message in ticket.messages.all %}
+                <div class="ticket-message w-fit-content rounded-custom p-2 px-3 list-group-item border shadow-sm {% if message.user != request.user %}bg-light text-dark{% else %}bg-orange text-white align-self-end{% endif %}">
+                  <div>{{ message.message }}</div>
+                  <div class="{% if message.user != request.user %} text-start {% else %} text-end {% endif %}">
+                    <small class="{% if message.user != request.user %}text-muted{% else %}text-white{% endif %}">
+                      {{ message.created_at|date:"H:i" }}
+                    </small>
+                  </div>
+                </div>
+                {% empty %}
+                  <p class="fst-italic text-muted">Без повідомлень</p>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p>У вас поки що немає звернень.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Контейнеры для расширенного окна и backdrop -->
+<div id="ticket-expanded-container"></div>
+<div id="ticket-backdrop-container"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const expandedRoot = document.getElementById('ticket-expanded-container');
+  const backdropRoot = document.getElementById('ticket-backdrop-container');
+
+  document.querySelectorAll('.ticket-card').forEach(card => {
+    card.addEventListener('click', () => {
+      expandedRoot.innerHTML = '';
+      backdropRoot.innerHTML = '';
+
+      const rect = card.getBoundingClientRect();
+      const startStyles = {
+        top: `${rect.top + window.scrollY}px`,
+        left: `${rect.left + window.scrollX}px`,
+        width: `${rect.width}px`,
+        height: `${rect.height}px`,
+      };
+
+      const title = card.querySelector('strong')?.innerText || '';
+      const date  = card.querySelector('small')?.innerText || '';
+      const msgs  = [...card.querySelectorAll('.ticket-message')];
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'expanded-ticket-wrapper rounded-custom overflow-hidden position-fixed';
+      Object.assign(wrapper.style, startStyles);
+
+      wrapper.innerHTML = `
+        <div class="card static w-100 h-100 bg-white position-relative blur-opacity-effect rounded-custom shadow">
+          <div class="card-header py-3 px-4 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">${title}</h5>
+            <small class="text-muted">${date}</small>
+            <button type="button" class="btn-close ms-2" aria-label="Close"></button>
+          </div>
+          <div class="card-body overflow-auto p-3 d-flex flex-column gap-2" style="max-height: calc(80vh - 90px);">
+          </div>
+        </div>
+      `;
+
+      const body = wrapper.querySelector('.card-body');
+      msgs.forEach(m => body.appendChild(m.cloneNode(true)));
+
+      expandedRoot.appendChild(wrapper);
+
+      const backdrop = document.createElement('div');
+      backdrop.className = 'blur-opacity-effect position-fixed top-0 start-0 w-100 h-100';
+      backdrop.style.zIndex = '998';
+      backdrop.addEventListener('click', close);
+      backdropRoot.appendChild(backdrop);
+
+      const closeBtn = wrapper.querySelector('.btn-close');
+      if (closeBtn) closeBtn.addEventListener('click', close);
+
+      requestAnimationFrame(() => wrapper.classList.add('open'));
+
+      function close() {
+        wrapper.classList.remove('open');
+        wrapper.addEventListener('transitionend', () => {
+          expandedRoot.innerHTML = '';
+          backdropRoot.innerHTML = '';
+        }, { once: true });
+      }
+    });
+  });
+});
+</script>
+{% endblock %}

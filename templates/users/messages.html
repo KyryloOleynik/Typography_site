@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="row">
+    {% include "personal_cabinet_nav_pannel.html" %}
+
+    <div class="col-md-9">
+      <h3 class="fw-bold mb-3">Всі повідомлення</h3>
+
+      {% if user.messages_sorted %}
+        <div class="row row-cols-1 g-3">
+          {% for msg in user.messages_sorted %}
+            <div class="col">
+              <div class="card shadow-sm border-0 rounded-custom h-100">
+                <div class="card-header d-flex justify-content-between align-items-center px-3 py-2">
+                  <strong class="text-secondary">Повідомлення</strong>
+                  {% if msg.created_at %}
+                    <small class="text-muted">{{ msg.created_at|date:"d.m.Y H:i" }}</small>
+                  {% endif %}
+                </div>
+                <div class="card-body py-2 pb-3 px-3">
+                  <p class="card-text mb-0">{{ msg.text }}</p>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        У вас поки що немає повідомлень.
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

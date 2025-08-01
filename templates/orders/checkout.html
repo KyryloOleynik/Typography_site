@@ -1,0 +1,385 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Оформлення замовлення{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+  <h3 class="mb-3 fw-bold">Оформлення замовлення</h3>
+  <div class="row gx-4">
+    <!-- Ліва колонка -->
+    <div class="col-lg-8">
+      <!-- Контактні дані --> 
+      <div class="card static rounded-custom mb-3 shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="fw-bold mb-3">Ваші контактні дані</h5>
+
+          <!-- Перегляд контактних даних -->
+          <div class="card static rounded-custom shadow-sm border-0 fade-toggle" id="contact-view">
+            <div class="card-body d-flex justify-content-between align-items-center flex-xss-column">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-person-circle fs-4 text-orange me-3"></i>
+                <div>
+                  <div class="fw-semibold">{{ request.user.last_name }} {{ request.user.first_name }} {{ request.user.middle_name }}</div>
+                  <div class="text-muted small">{{ request.user.email }}</div>
+                  <div class="text-muted small">{{ request.user.phone }}</div>
+                </div>
+              </div>
+              <button class="btn btn-link text-orange fw-semibold text-decoration-none" onclick="toggleContactEdit(true)">Змінити</button>
+            </div>
+          </div>
+
+          <!-- Форма редагування -->
+          <form id="contact-edit" class="fade-toggle mt-3 d-none" method="POST" action="{% url 'user:update_profile' %}">
+            {% csrf_token %}
+            <input type="hidden" name="success_url" value="checkout">
+            <div class="row">
+              <div class="col-md-6 mb-2">
+                <label for="{{ form_user.last_name.id_for_label }}" class="form-label small text-muted">Прізвище</label>
+                {{ form_user.last_name }}
+                {% if form_user.last_name.errors %}
+                  <div class="text-danger small">{{ form_user.last_name.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6 mb-2">
+                <label for="{{ form_user.first_name.id_for_label }}" class="form-label small text-muted">Імʼя</label>
+                {{ form_user.first_name }}
+                {% if form_user.first_name.errors %}
+                  <div class="text-danger small">{{ form_user.first_name.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6 mb-2">
+                <label for="{{ form_user.middle_name.id_for_label }}" class="form-label small text-muted">По батькові</label>
+                {{ form_user.middle_name }}
+                {% if form_user.middle_name.errors %}
+                  <div class="text-danger small">{{ form_user.middle_name.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label for="{{ form_user.phone.id_for_label }}" class="form-label small text-muted">Телефон</label>
+                {{ form_user.phone }}
+                {% if form_user.phone.errors %}
+                  <div class="text-danger small">{{ form_user.phone.errors.0 }}</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-orange fw-semibold px-4">Зберегти</button>
+              <button type="button" class="btn btn-outline-secondary px-4" onclick="toggleContactEdit(false)">Скасувати</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Адреса доставки -->
+      <div class="card static rounded-custom mb-3 shadow-sm border-0">
+        <div class="card-body">
+
+          <!-- Перша карточка перегляду адреси -->
+          <div class="card static rounded-custom shadow-sm border-0 fade-toggle" id="address-view">
+            <div class="card-body d-flex justify-content-between align-items-center flex-xss-column">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-geo-alt-fill fs-4 text-orange me-3"></i>
+                <div>
+                  <div class="fw-semibold">Підгородне</div>
+                  <div class="text-muted small">Дніпропетровська обл., Дніпровський р-н, вул. Квіткова, 12, кв. 8</div>
+                </div>
+              </div>
+              <button class="btn btn-link text-orange fw-semibold text-decoration-none" onclick="toggleAddressEdit(true)">Змінити</button>
+            </div>
+          </div>
+
+          <!-- Форма редагування -->
+          <form id="address-edit" class="fade-toggle d-none">
+            <div class="mb-2">
+              <label class="form-label small text-muted">Місто / населений пункт</label>
+              <input type="text" class="form-control rounded-custom" value="Підгородне">
+            </div>
+            <div class="mb-2">
+              <label class="form-label small text-muted">Область, район</label>
+              <input type="text" class="form-control rounded-custom" value="Дніпропетровська обл., Дніпровський р-н">
+            </div>
+            <div class="mb-3">
+              <label class="form-label small text-muted">Вулиця, будинок, квартира</label>
+              <input type="text" class="form-control rounded-custom" value="вул. Квіткова, 12, кв. 8">
+            </div>
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-orange fw-semibold px-4">Зберегти</button>
+              <button type="button" class="btn btn-outline-secondary px-4" onclick="toggleAddressEdit(false)">Скасувати</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Загальна картка замовлення -->
+      <div class="card static rounded-custom mb-3 shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="fw-bold mb-3">Ваше замовлення</h5>
+
+          <!-- Внутрішня картка: позиції -->
+          <div class="card static border-0 rounded-custom mb-4">
+            <div class="card-body">
+              <ul class="list-unstyled mb-0">
+                {% for item in cart.items.all %}
+                <li class="d-flex align-items-center pt-3 pb-1 {% if not forloop.last %}border-bottom pb-3{% endif %}">
+                  <img src="{{ item.service.image.url }}" alt="{{ item.service.title }}" class="rounded-custom me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                  <div class="flex-grow-1">
+                    <div class="fw-semibold">{{ item.service.title }}</div>
+                    <small class="text-muted">{{ item.quantity }} × {{ item.unit_price }} ₴</small>
+                  </div>
+                  <div class="fw-bold text-orange">{{ item.total_price }} ₴</div>
+                </li>
+                {% endfor %}
+              </ul>
+
+              <!-- Кнопка Редагувати товари -->
+              <div class="text-end">
+                <button type="button" class="btn btn-link text-decoration-none text-orange fw-semibold" data-bs-toggle="modal" data-bs-target="#cartModal">
+                  <i class="bi bi-pencil-square me-1"></i> Редагувати товари
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Доставка -->
+          <div class="mb-4">
+            <h6 class="fw-bold mb-3">Спосіб доставки</h6>
+            <div class="row gy-3">
+              {% for option in delivery_options %}
+              <div class="col-12">
+                <label class="d-flex align-items-start p-3 rounded-custom shadow-sm border border-light bg-white position-relative w-100 delivery-option {% if option.checked %}active{% endif %}" for="delivery_{{ forloop.counter }}" style="cursor: pointer;">
+                  <input class="form-check-input mt-1 me-3" type="radio" name="delivery" id="delivery_{{ forloop.counter }}" {% if option.checked %}checked{% endif %} hidden>
+                  <div class="flex-grow-1">
+                    <div class="fw-semibold">{{ option.label }}</div>
+                    {% if option.extra_html %}
+                    <div class="text-muted small mt-1">{{ option.extra_html|safe }}</div>
+                    {% endif %}
+                  </div>
+                  <div class="text-success fw-semibold ms-3">{{ option.price }}</div>
+                </label>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Оплата -->
+          <div>
+            <h6 class="fw-bold mb-3">Спосіб оплати</h6>
+            <div class="row gy-3">
+              {% for payment in payment_options %}
+              <div class="col-12">
+                <label class="d-flex align-items-start p-3 rounded-custom shadow-sm border border-light bg-white position-relative w-100 payment-option {% if payment.checked %}active{% endif %}" style="cursor: pointer;">
+                  <input class="form-check-input mt-1 me-3" type="radio" name="payment" value="{{ payment.value }}" {% if payment.checked %}checked{% endif %} hidden>
+                  <div>
+                    <div class="fw-semibold">{{ payment.title }}</div>
+                    {% if payment.description %}
+                    <div class="text-muted small mt-1">{{ payment.description }}</div>
+                    {% endif %}
+                  </div>
+                </label>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Отримувач -->
+          <div class="mt-4">
+            <h5 class="fw-bold mb-3">Отримувач</h5>
+
+            <!-- Перегляд отримувача -->
+            <div class="card static rounded-custom shadow-sm border-0 fade-toggle" id="recipient-view">
+              <div class="card-body d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-start">
+                  <i class="bi bi-person-lines-fill fs-4 text-orange me-3"></i>
+                  <div>
+                    <div class="fw-semibold" id="recipient-name">
+                      {{ current_recipient.last_name }} {{ current_recipient.first_name }} {{ current_recipient.middle_name }}
+                    </div>
+                    <div class="text-muted small" id="recipient-phone">{{ current_recipient.phone }}</div>
+                  </div>
+                </div>
+                <button class="btn btn-link text-orange fw-semibold text-decoration-none" onclick="toggleRecipientEdit(true)">Змінити</button>
+              </div>
+            </div>
+
+            <input type="hidden" id="add_order_recipient" value="{% url 'add_order_recipient' cart.id %}">
+            <input type="hidden" id="update_order_recipient" value="{% url 'update_order_recipient' cart.id %}">
+
+            <!-- Форма редагування отримувача -->
+            <form id="recipient-edit" class="fade-toggle mt-3 d-none" method="POST" action="{% url 'update_order_recipient' cart.id %}">
+              {% csrf_token %}
+              <input type="hidden" name="order_id" value="{{ cart.id }}">
+              <div class="mb-3">
+                <label class="form-label small text-muted">Оберіть отримувача</label>
+                <select class="form-select rounded-custom" name="recipient_id" id="recipient-selector" onchange="fillRecipientFields()" required>
+                  <option value="other">інший отримувач</option>
+                  {% for r in user.recipients.all %}
+                  <option value="{{ r.id }}"
+                          data-last="{{ r.last_name }}"
+                          data-first="{{ r.first_name }}"
+                          data-middle="{{ r.middle_name }}"
+                          data-phone="{{ r.phone }}"
+                          {% if r.id == current_recipient.id %}selected{% endif %}>
+                    {{ r.last_name }} {{ r.first_name }} {{ r.middle_name }} — {{ r.phone }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <!-- Поля для редагування вибраного -->
+              <div class="row">
+                <div class="col-md-6 mb-2">
+                  <label class="form-label small text-muted" for="{{ form.last_name.id_for_label }}">Прізвище</label>
+                  {{ form.last_name }}
+                  {% if form.last_name.errors %}
+                    <div class="text-danger small">{{ form.last_name.errors.0 }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-md-6 mb-2">
+                  <label class="form-label small text-muted" for="{{ form.first_name.id_for_label }}">Ім’я</label>
+                  {{ form.first_name }}
+                  {% if form.first_name.errors %}
+                    <div class="text-danger small">{{ form.first_name.errors.0 }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-md-6 mb-2">
+                  <label class="form-label small text-muted" for="{{ form.middle_name.id_for_label }}">По батькові</label>
+                  {{ form.middle_name }}
+                  {% if form.middle_name.errors %}
+                    <div class="text-danger small">{{ form.middle_name.errors.0 }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label class="form-label small text-muted" for="{{ form.phone.id_for_label }}">Мобільний телефон</label>
+                  {{ form.phone }}
+                  {% if form.phone.errors %}
+                    <div class="text-danger small">{{ form.phone.errors.0 }}</div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-orange fw-semibold px-4">Зберегти</button>
+                <button type="button" class="btn btn-outline-secondary px-4" onclick="toggleRecipientEdit(false)">Скасувати</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Права колонка -->
+    <div class="col-lg-4">
+      <div class="card rounded-custom shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="fw-bold mb-3">Підсумок</h5>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Сума замовлення</span>
+            <span>{{ cart.total_price }} ₴</span>
+          </div>
+          <div class="d-flex justify-content-between">
+            <span>Доставка</span>
+            <span class="text-muted">за тарифами перевізника</span>
+          </div>
+          <hr class="mb-2">
+          <div class="d-flex justify-content-between align-items-center py-1">
+            <span>До сплати</span>
+            <span class="fs-4 fw-bold text-orange">{{ cart.total_price }} ₴</span>
+          </div>
+          <hr class="mt-2">
+          <button class="btn btn-orange w-100 fw-semibold">Підтвердити замовлення</button>
+          <small class="text-muted d-block mt-2">Оплата можлива при отриманні або онлайн — залежно від вибору.</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleEditBlock(viewId, formId, showForm) {
+    const view = document.getElementById(viewId);
+    const form = document.getElementById(formId);
+
+    if (showForm) {
+      view.classList.add('d-none');
+      form.classList.remove('d-none');
+      form.classList.add('fade-in');
+    } else {
+      form.classList.remove('fade-in');
+      form.classList.add('fade-out');
+      setTimeout(() => {
+        form.classList.add('d-none');
+        form.classList.remove('fade-out');
+        view.classList.remove('d-none');
+        view.classList.add('fade-in');
+        setTimeout(() => view.classList.remove('fade-in'), 200);
+      }, 200);
+    }
+  }
+
+  function toggleContactEdit(show) {
+    toggleEditBlock('contact-view', 'contact-edit', show);
+  }
+
+  function toggleAddressEdit(show) {
+    toggleEditBlock('address-view', 'address-edit', show);
+  }
+
+  function toggleRecipientEdit(show) {
+    toggleEditBlock('recipient-view', 'recipient-edit', show);
+  }
+
+  document.querySelectorAll('input[name="delivery"]').forEach(input => {
+    input.addEventListener('change', () => {
+      document.querySelectorAll('.delivery-option').forEach(el => el.classList.remove('active'));
+      const parent = input.closest('.delivery-option') || input.closest('.form-check');
+      if (parent) parent.classList.add('active');
+    });
+  });
+
+  document.querySelectorAll('input[name="payment"]').forEach(input => {
+    input.addEventListener('change', () => {
+      document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('active'));
+      const parent = input.closest('.payment-option') || input.closest('.list-group-item');
+      if (parent) parent.classList.add('active');
+    });
+  });
+
+  function fillRecipientFields() {
+    const select = document.getElementById('recipient-selector');
+    const option = select.options[select.selectedIndex];
+    const form = document.getElementById('recipient-edit');
+
+    const addUrl = document.getElementById('add_order_recipient').value;
+    const updateUrl = document.getElementById('update_order_recipient').value;
+
+    const last = form.querySelector('#id_last_name');
+    const first = form.querySelector('#id_first_name');
+    const middle = form.querySelector('#id_middle_name');
+    const phone = form.querySelector('#id_phone');
+
+    if (option.value === 'other' || option.value === '') {
+      last.value = '';
+      first.value = '';
+      middle.value = '';
+      phone.value = '';
+      form.action = addUrl;
+    } else {
+      last.value = option.dataset.last || '';
+      first.value = option.dataset.first || '';
+      middle.value = option.dataset.middle || '';
+      phone.value = option.dataset.phone || '';
+      form.action = updateUrl;
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', fillRecipientFields);
+</script>
+{% endblock %}

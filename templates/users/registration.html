@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Реєстрація | PFB Typography{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 shadow-sm rounded-custom overflow-hidden border p-0">
+            <div class="row g-0">
+                <!-- Левая колонка: форма -->
+                <div class="col-md-6 p-4 bg-white border-end">
+                    <h2 class="mb-4 fw-bold text-center">Реєстрація</h2>
+
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                            <div class="mb-3 p-3 rounded error-message-registration shadow-sm zoomIn hover-card-effect">
+                                {% for error in form.non_field_errors %}
+                                <div class="fw-semibold">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <!-- Email -->
+                        <div class="{% if form.email.errors %}mb-2{% else %}mb-3{% endif %}">
+                            <label for="id_email" class="form-label">Email</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                {{ form.email }}
+                            </div>
+                            {% if form.email.errors %}
+                                <div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Пароль -->
+                        <div class="{% if form.password1.errors %}mb-2{% else %}mb-3{% endif %}">
+                            <label for="id_password1" class="form-label">Пароль</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                {{ form.password1 }}
+                            </div>
+                            {% if form.password1.errors %}
+                                <div class="text-danger small mt-1">{{ form.password1.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Подтверждение пароля -->
+                        <div class="{% if form.password2.errors %}mb-2{% else %}mb-3{% endif %}">
+                            <label for="id_password2" class="form-label">Підтвердіть пароль</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                {{ form.password2 }}
+                            </div>
+                            {% if form.password2.errors %}
+                                <div class="text-danger small mt-1">{{ form.password2.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Кнопка -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-warning fw-bold text-white" style="background-color: #F0A41A;">
+                                Зареєструватися
+                            </button>
+                        </div>
+
+                        <!-- Ссылка на вход -->
+                        <p class="text-center mt-3">
+                            Вже маєте акаунт?
+                            <a data-bs-toggle="modal" href="#" data-bs-target="#loginModal" class="link-warning">Увійти</a>
+                        </p>
+                    </form>
+                </div>
+
+                <!-- Правая колонка: Google вход -->
+                <div class="col-md-6 d-flex flex-column align-items-center justify-content-center bg-light text-center p-4">
+                    <p class="fw-semibold mb-3 text-muted">Альтернативний варіант входу</p>
+                    <a href="" class="btn btn-outline-dark d-flex align-items-center justify-content-center gap-2 px-4 py-2">
+                        <img src="{% static "images/google-logo.png" %}" alt="Google" width="20" height="20">
+                        Увійти з Google
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

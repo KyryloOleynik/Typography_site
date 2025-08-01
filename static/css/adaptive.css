@@ -1,0 +1,149 @@
+@media (max-width: 1200px) {
+    .carousel-caption h3 {
+        font-size: 1.25rem;
+    }
+    .carousel-caption h5 {
+        font-size: 1rem;
+    }
+    .carousel-caption p {
+        font-size: 0.9rem;
+    }
+    .carousel-caption a {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 767px) {
+    #ChageUserData {
+        font-size: x-small !important;
+    }
+    .carousel-caption h3 {
+        font-size: 0.9rem;
+    }
+    .carousel-caption h5 {
+        font-size: 0.75rem;
+    }
+    .carousel-caption p {
+        font-size: 0.5rem;
+    }
+    .carousel-caption a {
+        font-size: 0.7rem;
+    }
+    .carousel-caption .mb-4 {
+        margin-bottom: 0.75rem !important;
+    }
+}
+
+@media (max-width: 537px) {
+    #MainLinks .btn{
+        font-size: small !important;
+    }
+    .carousel-caption h3 {
+        font-size: 0.7rem;
+    }
+    .carousel-caption h5 {
+        font-size: 0.5rem;
+    }
+    .carousel-caption p {
+        font-size: 0.3rem;
+    }
+    .carousel-caption a {
+        font-size: 0.5rem;
+    }
+    .carousel-caption .mb-4 {
+        margin-bottom: 0.5rem !important;
+    }
+    .carousel-caption .btn {
+        padding: 0.3rem 0.5rem !important;
+    }
+    .toast.show.position-fixed.rounded-custom.overflow-hidden.p-1.px-2 {
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }
+}
+
+@media (max-width: 450px) {
+    #ChatCard {
+        width: 100%;
+        border-radius: 0;
+    }
+    .start-xs-50 {
+        left: 50% !important;
+    }
+    .translate-middle-xs-x{
+        transform: translateX(-50%) !important;
+    }
+    #ChatWrapper {
+        width: 100%;
+    }
+}
+
+@media (max-width: 400px) {
+    .flex-xss-column {
+        flex-direction: column !important;
+    }
+    .carousel-caption h3 {
+        font-size: 0.6rem;
+    }
+    .carousel-caption h5 {
+        font-size: 0.4rem;
+    }
+    .carousel-caption p {
+        font-size: 0.2rem;
+    }
+    .carousel-caption a {
+        font-size: 0.3rem;
+    }
+    .carousel-caption .mb-4 {
+        margin-bottom: 0.4rem !important;
+    }
+    .carousel-caption .btn {
+        padding: 0.2rem 0.4rem !important;
+    }
+}
+
+@media (max-width: 320px) {
+    #sideMenu {
+        border-radius: 0px !important;
+    }
+}
+
+@media (max-width: 991px) {
+    #ChatWrapper {
+        bottom: 115px;
+        right: 35px;
+    }
+    #PhoneCircle {
+        bottom: 110px;
+        right: 35px;
+    }
+    main.container-fluid {
+        padding-bottom: 85px !important;
+    }
+}
+
+@media (max-width: 385px) {
+    #mainNavbar {
+        width: 91% !important;
+    }
+}
+
+@media (min-width: 768px) {
+  .no-border-bottom-md {
+    border-bottom: none !important;
+  }
+  .border-md-end {
+    border-right: 1px solid #9f9f9f !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .expanded-ticket-wrapper.open {
+    top: 0 !important;
+    left: 0 !important;
+    transform: none !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    border-radius: 0 !important;
+  }
+}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Сторінку не знайдено{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="text-center">
+    <img src="" alt="404" class="img-fluid" style="max-width: 400px;">
+    <h1 class="display-4 fw-bold text-orange mt-4">Ой! Сторінку не знайдено</h1>
+    <p class="text-muted">Можливо, вона була переміщена або видалена.</p>
+    <a href="{% url 'main' %}" class="btn btn-orange mt-3">
+      <i class="bi bi-house-door me-1"></i> На головну
+    </a>
+  </div>
+</div>
+{% endblock %}

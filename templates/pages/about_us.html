@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Про нас – PFB Typography{% endblock %}
+
+{% block content %}
+
+<section class="container info-cards">
+
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
+    <div class="col">
+      <div class="card p-4 shadow-sm rounded-custom fadeInDown blur-opacity-effect">
+        <h3 class="fw-bold mb-2">Наша Місія</h3>
+        <p class="text-secondary">Надати клієнту креативні поліграфічні рішення, що вражають з першого погляду.</p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card p-4 shadow-sm rounded-custom fadeInDown blur-opacity-effect" style="animation-delay: 0.08s;">
+        <h3 class="fw-bold mb-2">Наша Історія</h3>
+        <p class="text-secondary">Заснована 2010 року, ми виросли від невеликої майстерні до провідного поліграфічного центру з тисячами задоволених клієнтів.</p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card p-4 shadow-sm rounded-custom fadeInDown blur-opacity-effect" style="animation-delay: 0.16s;">
+        <h3 class="fw-bold mb-2">Наша Команда</h3>
+        <p class="text-secondary">Дизайнери, типографи, інженери друку — об'єднані спільною пристрастю до якості та постійного розвитку.</p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card p-4 shadow-sm rounded-custom fadeInDown blur-opacity-effect" style="animation-delay: 0.24s;">
+        <h3 class="fw-bold mb-2">Наші Цінності</h3>
+        <ul class="list-unstyled text-secondary mb-0">
+          <li>Точність і деталізація</li>
+          <li>Індивідуальний підхід</li>
+          <li>Інноваційні технології</li>
+          <li>Екологічна стійкість</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-line-container" id="svgLine">
+    <svg width="100%" height="100%" viewBox="0 0 3314 1203" preserveAspectRatio="none">
+      <path class="info__card-line-vector"
+            d="M1.00011 349.937C760.646 333.143 2138.39 345.18 1572.21 527.678C1006.03 710.176 1974.86 791.305 2530.05 809.057C2658.11 806.641 2992.32 818.765 3304.71 886.586"
+            fill="none" />
+    </svg>
+  </div>
+</section>
+
+<section class="container mb-5">
+  <h2 class="text-center fw-bold mb-5"><i class="bi bi-type text-orange me-2"></i>Все про сучасну типографію</h2>
+  <div class="row g-5">
+    <div class="col-md-6 fadeInUp">
+      <h5><i class="bi bi-clock-history text-orange me-2"></i>Історія шрифтів</h5>
+      <p class="text-secondary">Від гравюр до цифрового друку — шрифт пройшов еволюцію. Ми об’єднуємо класику з інноваціями.</p>
+    </div>
+    <div class="col-md-6 fadeInUp" style="animation-delay: 0.08s;">
+      <h5><i class="bi bi-fonts text-orange me-2"></i>Види шрифтів</h5>
+      <ul class="text-secondary ps-3 mb-0">
+        <li><i class="bi bi-dot text-orange me-1"></i><strong>Серіфні</strong> – класичні та елегантні</li>
+        <li><i class="bi bi-dot text-orange me-1"></i><strong>Санс-серіф</strong> – чисті та сучасні</li>
+        <li><i class="bi bi-dot text-orange me-1"></i><strong>Моноширинні</strong> – технічні й точні</li>
+        <li><i class="bi bi-dot text-orange me-1"></i><strong>Декоративні</strong> – для особливих проєктів</li>
+      </ul>
+    </div>
+    <div class="col-md-6 fadeInUp" style="animation-delay: 0.16s;">
+      <h5><i class="bi bi-palette text-orange me-2"></i>Колір і контраст</h5>
+      <p class="text-secondary">Правильна палітра робить дизайн не просто красивим, а функціональним.</p>
+    </div>
+    <div class="col-md-6 fadeInUp" style="animation-delay: 0.24s;">
+      <h5><i class="bi bi-layers text-orange me-2"></i>Типографічна ієрархія</h5>
+      <p class="text-secondary">Візуальний порядок — це комфорт для очей і ефективна передача інформації.</p>
+    </div>
+    <div class="col-md-6 fadeInUp" style="animation-delay: 0.32s;">
+      <h5><i class="bi bi-file-earmark-text text-orange me-2"></i>Вибір паперу</h5>
+      <p class="text-secondary">Текстура, щільність і фініш — це не деталі, це емоції на дотик.</p>
+    </div>
+    <div class="col-md-6 fadeInUp" style="animation-delay: 0.4s;">
+      <h5><i class="bi bi-arrows-collapse text-orange me-2"></i>Розмір та відступи</h5>
+      <p class="text-secondary">Баланс білого простору — запорука читаємості та краси.</p>
+    </div>
+  </div>
+</section>
+
+<section class="container my-5 services-list">
+  <h2 class="text-center fw-bold mb-5 fadeInUp"><i class="bi bi-briefcase text-orange me-2"></i>Наші Послуги</h2>
+  <div class="row g-4">
+    <div class="col-md-4 flipInX">
+      <div class="card p-4 h-100 shadow-sm blur-opacity-effect">
+        <div class="mb-2"><i class="bi bi-easel text-orange fs-2"></i></div>
+        <h5>Дизайн брендбуку</h5>
+        <p class="text-secondary">Унікальні гіди з фірмовим стилем: кольори, логотипи, правила застосування.</p>
+      </div>
+    </div>
+    <div class="col-md-4 flipInX" style="animation-delay: 0.1s;">
+      <div class="card p-4 h-100 shadow-sm blur-opacity-effect">
+        <div class="mb-2"><i class="bi bi-megaphone text-orange fs-2"></i></div>
+        <h5>Друк плакатів</h5>
+        <p class="text-secondary">Якісний офсетний та цифровий друк рекламної продукції.</p>
+      </div>
+    </div>
+    <div class="col-md-4 flipInX" style="animation-delay: 0.2s;">
+      <div class="card p-4 h-100 shadow-sm blur-opacity-effect">
+        <div class="mb-2"><i class="bi bi-person-vcard text-orange fs-2"></i></div>
+        <h5>Виготовлення візиток</h5>
+        <p class="text-secondary">Розкішні та мінімалістичні рішення для представлення вашого бренду.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container my-5 philosophy-section">
+  <h2 class="text-center fw-bold mb-5 fadeInDown"><i class="bi bi-lightbulb text-orange me-2"></i>Наша Філософія</h2>
+  <div class="row g-5">
+    <div class="col-md-6 fadeInLeft">
+      <h5><i class="bi bi-person-check text-orange me-2"></i>Мислити як клієнт</h5>
+      <p class="text-secondary">Ми вникаємо в ваш бренд, стиль і очікування, аби створити дійсно корисний продукт.</p>
+    </div>
+    <div class="col-md-6 fadeInRight">
+      <h5><i class="bi bi-award text-orange me-2"></i>Якість понад усе</h5>
+      <p class="text-secondary">Контроль на кожному етапі. Уважність до деталей — це наша мова якості.</p>
+    </div>
+  </div>
+</section>
+
+<section class="container my-5 tech-section">
+  <h2 class="text-center fw-bold mb-5 fadeInUp"><i class="bi bi-cpu text-orange me-2"></i>Наші Технології</h2>
+  <div class="row g-5">
+    <div class="col-md-4 zoomIn">
+      <h5><i class="bi bi-printer text-orange me-2"></i>Цифровий друк</h5>
+      <p class="text-secondary">Ідеальний для малих тиражів та персоналізації — швидко, точно, якісно.</p>
+    </div>
+    <div class="col-md-4 zoomIn" style="animation-delay: 0.1s;">
+      <h5><i class="bi bi-gear text-orange me-2"></i>Офсетний друк</h5>
+      <p class="text-secondary">Класика галузі. Для великих обсягів з вражаючою деталізацією.</p>
+    </div>
+    <div class="col-md-4 zoomIn" style="animation-delay: 0.2s;">
+      <h5><i class="bi bi-droplet-half text-orange me-2"></i>УФ-лакування</h5>
+      <p class="text-secondary">Додає блиску, захисту та солідності. Виглядає справді преміально.</p>
+    </div>
+  </div>
+</section>
+
+<section class="container my-5 reviews-section">
+  <h2 class="text-center fw-bold mb-5 fadeInDown"><i class="bi bi-chat-dots text-orange me-2"></i>Відгуки Клієнтів</h2>
+  <div class="row g-4">
+    <div class="col-md-4 fadeInUp">
+      <blockquote class="blockquote border rounded-custom p-3 shadow-sm h-100">
+        <p class="text-secondary">“Швидко, якісно, ідеально підібрані кольори. Дякуємо за персональний підхід!”</p>
+        <footer class="blockquote-footer">Андрій, CEO EventPro</footer>
+      </blockquote>
+    </div>
+    <div class="col-md-4 fadeInUp" style="animation-delay: 0.1s;">
+      <blockquote class="blockquote border rounded-custom p-3 shadow-sm h-100">
+        <p class="text-secondary">“Ми отримали брендбук раніше терміну. Команда справді переймається вашим брендом.”</p>
+        <footer class="blockquote-footer">Ірина, RetailHub</footer>
+      </blockquote>
+    </div>
+    <div class="col-md-4 fadeInUp" style="animation-delay: 0.2s;">
+      <blockquote class="blockquote border rounded-custom p-3 shadow-sm h-100">
+        <p class="text-secondary">“Це найкраща типографія, з якою я працював. Рекомендую кожному, хто цінує результат.”</p>
+        <footer class="blockquote-footer">Дмитро, дизайнер</footer>
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<section class="container my-5 social-responsibility">
+  <h2 class="text-center fw-bold mb-5 fadeInUp"><i class="bi bi-globe text-orange me-2"></i>Соціальна Відповідальність</h2>
+  <div class="row g-4">
+    <div class="col-md-6 fadeInLeft">
+      <h5><i class="bi bi-people text-orange me-2"></i>Підтримка ініціатив</h5>
+      <p class="text-secondary">Співпраця з місцевими школами, бібліотеками, арт-проєктами — ми друкуємо з користю для суспільства.</p>
+    </div>
+    <div class="col-md-6 fadeInRight">
+      <h5><i class="bi bi-recycle text-orange me-2"></i>Екологічне виробництво</h5>
+      <p class="text-secondary">Сертифіковані матеріали, соєві фарби та енергоефективність — нам важлива планета.</p>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const svgLine = document.getElementById('svgLine');
+    const path = svgLine.querySelector('.info__card-line-vector');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          path.classList.add('drawn');
+          observer.disconnect();
+        }
+      });
+    }, { threshold: 0.3 });
+    observer.observe(svgLine);
+  });
+</script>
+{% endblock %}

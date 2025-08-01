@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Портфоліо – PFB Typography{% endblock %}
+
+{% block content %}
+<section class="container pt-3">
+    <div class="row mw-100">
+        <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb" class="mb-1">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <i class="bi bi-house-door-fill text-orange me-1"></i>
+                    <a href="{% url 'main' %}" class="text-decoration-none text-secondary">PFB Typography</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Портфоліо</li>
+            </ol>
+        </nav>
+
+        <h2 class="fw-bold mb-4">Наші роботи</h2>
+    </div>
+
+    <div class="row g-4">
+        <!-- Зразок 1 -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <img src="{% static 'images/portfolio/sample1.webp' %}" class="card-img-top" alt="Зразок 1">
+                <div class="card-body">
+                    <h5 class="card-title">Візитки</h5>
+                    <p class="card-text">Повнокольорові візитки з ламінацією для корпоративного клієнта.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Зразок 2 -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <img src="{% static 'images/portfolio/sample2.webp' %}" class="card-img-top" alt="Зразок 2">
+                <div class="card-body">
+                    <h5 class="card-title">Флаєри</h5>
+                    <p class="card-text">Рекламні флаєри формату A5 для локального ресторану.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Зразок 3 -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <img src="{% static 'images/portfolio/sample3.jpeg' %}" class="card-img-top" alt="Зразок 3">
+                <div class="card-body">
+                    <h5 class="card-title">Плакати</h5>
+                    <p class="card-text">Плакати для фестивалю з високою роздільною здатністю та яскравими кольорами.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-5">
+        <a href="javascript:void(0)" id="catalogToggleFooter" class="btn btn-outline-orange px-4 py-2">Замовити схожий проєкт</a>
+    </div>
+</section>
+{% endblock %}

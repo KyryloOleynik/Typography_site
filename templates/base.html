@@ -1,0 +1,457 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}{% endblock %}</title>
+
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!--FONT IMPORT-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/adaptive.css' %}">
+    <link rel="stylesheet" href="{% static 'css/animate.css' %}">
+    <!-- Дополнительные CSS -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div id="toastContainer" class="position-fixed top-0 start-xs-50 translate-middle-xs-x p-3" style="z-index: 9999; max-width: 400px;">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="toast show rounded-custom overflow-hidden p-1 px-2 mb-2" role="alert" aria-live="assertive" aria-atomic="true" style="z-index: 9999; top: 20px; left: 20px;">
+            <div class="toast-header px-3 py-2">
+              <!-- Метка-статус по уровню сообщения -->
+              <span class="rounded-circle me-2" style="width: 10px; height: 10px;
+                background-color:
+                  {% if message.tags == 'success' %}#28a745
+                  {% elif message.tags == 'error' or message.tags == 'danger' %}#dc3545
+                  {% elif message.tags == 'info' %}#ffc107
+                  {% else %}#6c757d{% endif %};">
+              </span>
+
+              <img src="{% static 'images/logo.png' %}" height="20" width="20" class="rounded me-2" alt="PFB Typography">
+              <strong class="me-auto">PFB Typography</strong>
+              <small class="text-body-secondary">Зараз</small>
+              <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+              {{ message }}
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+
+    <!-- Навигация -->
+    <nav id="mainNavbar" class="navbar navbar-expand-lg navbar-light bg-light shadow w-75 rounded-pill position-fixed py-3 start-50 translate-middle-x zoomIn blur-opacity-effect">
+      <div class="container">
+        <div class="d-flex">
+          <a class="navbar-brand p-0 d-flex fw-bold flex-row me-3" style="font-size: 0.9rem;" href="{% url 'main' %}"><img height="40" width="40" src="{% static 'images/logo.png' %}"><text class="d-flex flex-column"><text>PFB</text> <text>Typography</text></text></a>
+          <button id="catalogToggle" class="btn btn-orange d-none d-lg-inline-flex align-items-center ms-3">
+            <i class="bi bi-folder-fill me-2"></i>
+            Каталог
+          </button>
+        </div>
+
+        <!-- Кнопка Каталог только на мобильных -->
+        <button id="catalogToggleMobile" class="btn btn-orange d-flex d-lg-none align-items-center ms-3 py-2">
+          <i class="bi bi-folder-fill me-2"></i>
+          Каталог
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'main' %}active{% endif %}" href="{% url 'main' %}">Головна</a></li>
+            <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'about_us' %}active{% endif %}" href="{% url 'about_us' %}">Про нас</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="modal" data-bs-target="#cartModal">Кошик</a></li>
+            <li class="nav-item position-relative"><a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" {% if user.is_authenticated %}href="{% url 'user:dashboard' %}"{% else %}data-bs-toggle="modal" data-bs-target="#loginModal"{% endif %}>Профіль{% if user.unread_messages > 0 %}<span class="position-absolute translate-middle badge rounded-custom bg-orange"  style="top: 22.5%; left: 92.5%;">{{ user.unread_messages }}<span class="visually-hidden">непрочитані повідомлення</span></span>{% endif %}</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Нижнее мобильное меню -->
+    <nav class="navbar navbar-light bg-light fixed-bottom border-top d-lg-none blur-opacity-effect">
+      <div class="container-fluid d-flex justify-content-around px-0">
+
+        <a href="{% url 'main' %}" class="nav-link text-center {% if request.resolver_match.url_name == 'main' %}active text-orange{% else %}text-secondary{% endif %}">
+          <i class="bi bi-house-door fs-4"></i>
+          <div style="font-size: 0.75rem;">Головна</div>
+        </a>
+
+        <a href="{% url 'news:main_news' %}" class="nav-link text-center {% if request.resolver_match.url_name == 'main_news' %}active text-orange{% else %}text-secondary{% endif %}">
+          <i class="bi bi-newspaper fs-4"></i>
+          <div style="font-size: 0.75rem;">Новини</div>
+        </a>
+
+        <a href="#" class="nav-link text-center text-secondary" data-bs-toggle="modal" data-bs-target="#cartModal">
+          <i class="bi bi-cart fs-4"></i>
+          <div style="font-size: 0.75rem;">Кошик</div>
+        </a>
+
+        <a href="{% if user.is_authenticated %}{% url 'user:dashboard' %}{% else %}#{% endif %}" class="nav-link position-relative text-center {% if request.resolver_match.url_name == 'dashboard' %}active text-orange{% else %}text-secondary{% endif %}" 
+          {% if not user.is_authenticated %}data-bs-toggle="modal" data-bs-target="#loginModal"{% endif %}>
+          <i class="bi bi-person fs-4"></i>
+          <div style="font-size: 0.75rem;">Профіль</div>
+          {% if user.unread_messages > 0 %}
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-orange">
+            {{ user.unread_messages }}
+            <span class="visually-hidden">непрочитані повідомлення</span>
+          </span>
+          {% endif %}
+        </a>
+
+      </div>
+    </nav>
+
+    <!-- Основное содержимое -->
+    <main class="container-fluid px-0 pt-5 d-flex flex-column min-vh-100">
+        <div id="categoryPanel" class="container shadow border bg-white p-4 animate__animated d-none position-fixed mt-5 blur-opacity-effect">
+          <div class="row">
+            <div class="col-md-3 border-md-end border-bottom no-border-bottom-md mb-3 pb-1 pb-md-0 mb-md-0" style="border-color: #6d6d6d24 !important;">
+              <ul class="list-group">
+                {% for maincategory in maincategories %}
+                  <a href="{% url 'catalog:category_detail' maincategory.slug %}" class="text-decoration-none text-dark w-100 bg-light mb-2 p-2 h6 rounded-3 opacity-75">{{ maincategory.title }}</a>
+                  {% for category in maincategory.children.all %}
+                  <li class="mb-2 list-group-item  rounded-custom list-group-item-action category-el border shadow-sm opacity-75">
+                    <a href="{% url 'catalog:category_detail' category.slug %}" class="text-decoration-none text-secondary">{{ category.title }}</a>
+
+                    <div class="d-none subcategory-container">
+                      <ul class="row row-cols-2 row-cols-md-3 g-2 ps-2">
+                        {% for subcategory in category.children.all %}
+                          <div class="col">
+                            <div class="list-group-item list-group-item-action  rounded-custom border h-100 shadow-sm opacity-75">
+                              <a href="{% url 'catalog:category_detail' subcategory.slug %}" class="text-decoration-none text-secondary">{{ subcategory.title }}</a>
+                            </div>
+                          </div>
+                        {% endfor %}
+                      </ul>
+                    </div>
+                  </li>
+                  {% endfor %}
+                {% endfor %}
+              </ul>
+            </div>
+            <div class="col-md-9" id="SubcategoryPlace">
+              
+            </div>
+          </div>
+        </div>
+        <div class="flex-grow-1 pt-5 mt-2">
+            {% block content %}
+            <!-- Здесь будет контент страницы -->
+            {% endblock %}
+        </div>
+        
+        <!-- Подвал -->
+        <footer class="bg-light text-center border-top border-3">
+            <div class="container py-4">
+              <div class="row row-cols-md-2 row-cols-1 row-cols-sm-2 row-cols-lg-4 mb-4 pt-2 g-4">
+                
+                <div class="col">
+                  <h6 class="fw-bold d-flex justify-content-center justify-content-lg-start">Послуги</h6>
+                  <div class="d-flex flex-column align-items-lg-start align-items-sm-center">
+                    <a href="javascript:void(0)" id="catalogToggleFooter" class="nav-link p-0 text-decoration-none text-secondary">Каталог</a>
+                    <a href="{% url 'portfolio' %}" class="nav-link p-0 text-decoration-none text-secondary">Портфоліо</a>
+                    <a href="{% url 'pay_delivery' %}" class="nav-link p-0 text-decoration-none text-secondary">Оплата / Доставка</a>
+                  </div>
+                </div>
+
+                <div class="col">
+                  <h6 class="fw-bold d-flex justify-content-center justify-content-lg-start">Компанія</h6>
+                  <div class="d-flex flex-column align-items-lg-start align-items-sm-center">
+                    <a href="{% url 'main' %}" class="nav-link p-0 text-decoration-none text-secondary">Головна</a>
+                    <a href="{% url 'news:main_news' %}" class="nav-link p-0 text-decoration-none text-secondary">Новини</a>
+                    <a href="{% url 'about_us' %}" class="nav-link p-0 text-decoration-none text-secondary">Про нас</a>
+                    <a href="{% url 'question_answer' %}" class="nav-link p-0 text-decoration-none text-secondary">Питання-Відповідь</a>
+                  </div>
+                </div>
+
+                <div class="col">
+                  <h6 class="fw-bold d-flex justify-content-center justify-content-lg-start">Юридична інформація</h6>
+                  <div class="d-flex flex-column align-items-lg-start align-items-sm-center">
+                    <a href="{% url 'return_policy' %}" class="nav-link p-0 text-decoration-none text-secondary">Обмін і повернення товару</a>
+                    <a href="{% url 'terms_of_use' %}" class="nav-link p-0 text-decoration-none text-secondary">Умови використання</a>
+                    <a href="{% url 'privacy_policy' %}" class="nav-link p-0 text-decoration-none text-secondary">Політика конфіденційності</a>
+                  </div>
+                </div>
+
+                <div class="col">
+                  <h6 id="ContactInfo" class="fw-bold d-flex justify-content-center justify-content-lg-start">Контактна інформація</h6>
+                  <div class="d-flex flex-column align-items-lg-start align-items-sm-center">
+                    <a class="nav-link p-0 text-decoration-none text-secondary"><i class="bi bi-telephone me-2"></i>+380000000000</a>
+                    <a href="https://maps.google.com" class="nav-link p-0 text-decoration-none text-secondary text-decoration-hover"><i class="bi bi-geo-alt me-2"></i>м. Київ, вул. Івана Виговського, 13</a>
+                    <span class="nav-link p-0 text-decoration-none text-secondary"><i class="bi bi-clock me-2"></i>Пн–Сб: 9:00–19:00</span>
+                    <span class="nav-link p-0 ps-lg-4 text-decoration-none text-secondary d-flex justify-content-center justify-content-lg-star">
+                      
+                      <a href="https://instagram.com" class="text-secondary" target="_blank" rel="noopener">
+                        <i class="bi bi-instagram"></i>
+                      </a>
+                      
+                      <a href="https://t.me/your_channel" class="text-secondary ms-2" target="_blank" rel="noopener">
+                        <i class="bi bi-telegram"></i>
+                      </a>
+
+                      <a href="https://facebook.com" class="text-secondary ms-2" target="_blank" rel="noopener">
+                        <i class="bi bi-facebook"></i>
+                      </a>
+
+                      <a href="https://tiktok.com/@your_profile" class="text-secondary ms-2" target="_blank" rel="noopener">
+                        <i class="bi bi-tiktok"></i>
+                      </a>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row row-cols-md-2 row-cols-1 g-4 mt-0 justify-content-between border-top border-2 pb-4">
+              <text class="col">Авторське право&nbsp;&nbsp;©2025 <a href="https://mail.google.com/mail/?view=cm&fs=1&to=kirilovich.r.o@gmail.com" target="_blank" class="nav-link p-0 text-decoration-none text-dark text-decoration-hover">Олійник Родіон</a>. Усі права захищено.</text>
+              <a href="" class="col nav-link p-0 text-decoration-none text-dark">Оферта</a>
+            </div>
+          </div>
+        </footer>
+
+        <!-- Модальное окно входа -->
+        <div class="modal fade  rounded-custom" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true" style="z-index: 1000000;">
+          <div class="modal-dialog modal-dialog-centered my-0">
+            <div class="modal-content zoomIn blur-opacity-effect">
+              <div class="modal-header">
+                <h5 class="modal-title" id="loginModalLabel">Вход</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+              </div>
+              <div class="modal-body">
+                <form method="POST" action="{% url 'user:login' %}">
+                  {% csrf_token %}
+                  <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" name="email" id="email" placeholder="Введите email">
+                  </div>
+                  <div class="mb-2">
+                    <label for="password" class="form-label">Пароль</label>
+                    <input type="password" class="form-control" name="password" id="password" placeholder="Введите пароль">
+                    <div class="text-end mt-1 pb-1">
+                      <a href="{% url 'user:password_reset' %}" class="text-decoration-none small text-muted">
+                        Забыли пароль?
+                      </a>
+                    </div>
+                  </div>
+                  <button type="submit" class="btn btn-orange w-100">Войти</button>
+                </form>
+                <div class="text-center mt-3">
+                  <a href="{% url 'user:registration' %}" class="text-orange text-decoration-none">Зарегистрироваться</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Модальне вікно корзини -->
+        <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content blur-opacity-effect">
+              <div class="modal-header">
+                <h5 class="modal-title" id="cartModalLabel">Ваші замовлення</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрити"></button>
+              </div>
+              <div class="modal-body">
+                {% if cart.items.count > 0 or cart.count > 0 %}
+                  <div class="row row-cols-1 g-3">
+                    <div class="col">
+                      <div class="card static rounded-custom overflow-hidden shadow-sm border-0 rounded-3">
+                        <div class="card-body">
+                          <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="fw-bold mb-0">
+                              {% if cart.id %}
+                                Замовлення #{{ cart.id }}
+                              {% else %}
+                                Ваше замовлення
+                              {% endif %}
+                            </h6>
+                            <span class="badge bg-orange text-white rounded-pill px-3 py-2">
+                              {% if cart.total_price %}
+                                {{ cart.total_price|floatformat:2 }} грн
+                              {% else %}
+                                {{ cart.get_total_price|floatformat:2 }} грн
+                              {% endif %}
+                            </span>
+                          </div>
+                          <p class="text-muted mb-1">
+                            <i class="bi bi-calendar2-week"></i>
+                            {% if cart.created_at %}
+                              {{ cart.created_at|date:"d.m.Y H:i" }}
+                            {% elif cart_created_at %}
+                              {{ cart_created_at|date:"d.m.Y H:i" }}
+                            {% else %}
+                              Сьогодні
+                            {% endif %}
+                          </p>
+
+                          <div class="mt-3 d-flex flex-column gap-3">
+                            {% if cart.items %}
+                              {% for item in cart.items.all %}
+                                <div class="card mb-1 rounded-custom border-0 shadow-sm position-relative">
+                                  <div class="row g-0 align-items-center">
+                                    {% if item.service.image %}
+                                      <div class="col-md-3 text-center p-2">
+                                        <img src="{{ item.service.image.url }}" alt="{{ item.service.title }}" class="img-fluid rounded-custom" style="max-height: 100px;">
+                                      </div>
+                                    {% endif %}
+                                    <div class="col-md-9">
+                                      <div class="card-body py-2 px-3">
+                                        <p class="mb-1"><a href="{% url 'catalog:service_detail' item.service.slug %}" class="card-title text-dark text-decoration-none fw-bold mb-2 h6">{{ item.service.title }}</a></p>
+                                        <p class="mb-1 text-muted">Тираж: <strong>{{ item.quantity }} шт.</strong></p>
+                                        {% if item.options.all %}
+                                          <p class="mb-1 text-muted">
+                                            Опції:
+                                            {% for opt in item.options.all %}
+                                              <span class="badge bg-light text-dark me-1 hover-card-effect {% if forloop.first %}ms-1{% endif %}">{{ opt.title }}</span>
+                                            {% endfor %}
+                                          </p>
+                                        {% endif %}
+                                        <p class="mb-0 text-muted">Ціна: <strong>{{ item.total_price|floatformat:2 }} грн</strong></p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <form method="post" action="{% url 'catalog:remove_from_cart' item.service.slug %}" class="position-absolute top-0 m-2 delete-form" style="right: 1px;">
+                                    {% csrf_token %}
+                                    {% for opt in item.options.all %}
+                                      <input type="hidden" name="option_{{ opt.id }}" value="{{ opt.id }}">
+                                    {% endfor %}
+                                    <input type="hidden" name="tirazh" value="{{ item.quantity }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle d-flex align-items-center justify-content-center" title="Видалити позицію" style="width: 28px; height: 28px;">
+                                      <i class="bi bi-x-lg small"></i>
+                                    </button>
+                                  </form>
+                                </div>
+                              {% endfor %}
+                            {% else %}
+                              {% for item in cart %}
+                                <div class="card mb-1 rounded-custom border-0 shadow-sm position-relative">
+                                  <div class="row g-0 align-items-center">
+                                    {% if item.service.image %}
+                                      <div class="col-md-3 text-center p-2">
+                                        <img src="{{ item.service.image.url }}" alt="{{ item.service.title }}" class="img-fluid rounded-custom" style="max-height: 100px;">
+                                      </div>
+                                    {% endif %}
+                                    <div class="col-md-9">
+                                      <div class="card-body py-2 px-3">
+                                        <p class="mb-1"><a href="{% url 'catalog:service_detail' item.service.slug %}" class="card-title text-dark text-decoration-none fw-bold h6">{{ item.service.title }}</a></p>
+                                        <p class="mb-1 text-muted">Тираж: <strong>{{ item.quantity }}  шт.</strong></p>
+                                        {% if item.options %}
+                                          <p class="mb-1 text-muted">
+                                            Опції:
+                                            {% for opt in item.options %}
+                                              <span class="badge bg-light text-dark me-1 hover-card-effect {% if forloop.first %}ms-1{% endif %}">{{ opt.title }}</span>
+                                            {% endfor %}
+                                          </p>
+                                        {% endif %}
+                                        <p class="mb-0 text-muted">Ціна: <strong>{{ item.total_price|floatformat:2 }} грн</strong></p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <form method="post" action="{% url 'catalog:remove_from_cart' item.service.slug %}" class="position-absolute top-0 m-2 delete-form" style="right: 1px;">
+                                    {% csrf_token %}
+                                    {% for opt in item.options.all %}
+                                      <input type="hidden" name="option_{{ opt.id }}" value="{{ opt.id }}">
+                                    {% endfor %}
+                                    <input type="hidden" name="tirazh" value="{{ item.quantity }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle d-flex align-items-center justify-content-center" title="Видалити позицію" style="width: 28px; height: 28px;">
+                                      <i class="bi bi-x-lg small"></i>
+                                    </button>
+                                  </form>
+                                </div>
+                              {% endfor %}
+                            {% endif %}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                {% else %}
+                  У вас поки немає замовлень.
+                {% endif %}
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+                <a href="{% url 'checkout' %}" class="btn btn-success">Оформити замовлення</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Чат с ИИ ботом -->
+        <div id="ChatWrapper" class="position-fixed overflow-hidden chat-wrapper-animated" style="z-index: 10000;">
+          <div id="ChatCard" class="card static bg-white overflow-hidden w-100 h-100">
+            <div class="card-header bg-orange text-white fw-bold p-3 px-4 d-flex justify-content-between align-items-center">
+              <span>Консультант PFB</span>
+              <button type="button" class="btn-close btn-close-white" aria-label="Закрити"></button>
+            </div>
+            <div class="card-body p-3" style="overflow-y: auto; background-color: #f9f9f9;">
+              <div class="d-flex flex-column gap-2" id="messagesContainer">
+                {% if chat.messages.all %}
+                  <div class="w-fit-content rounded-custom p-2 list-group-item border shadow-sm bg-light zoomIn">
+                    Вітаю! Чим можу допомогти?
+                    <div class="text-start">
+                      <small class="text-muted" style="font-size: small !important;">
+                        {{ chat.messages.all.0.created_at|date:"H:i" }}
+                      </small>
+                    </div>
+                  </div>
+                {% endif %}
+                {% for message in chat.messages.all %}
+                <div data-key="{{ message.created_at_iso }}_{{ message.id }}" class="w-fit-content rounded-custom p-2 px-3 list-group-item border shadow-sm {% if message.user and message.user != request.user %} bg-light {% else %} text-white align-self-end bg-orange {% endif %} zoomIn">
+                  <div>{{ message.message }}</div>
+                  <div class="{% if message.user and message.user != request.user %} text-start {% else %} text-end {% endif %}">
+                    <small class="{% if message.user and message.user != request.user %} text-muted {% else %} text-white {% endif %}" style="font-size: small !important;">
+                      {{ message.created_at|date:"H:i" }}
+                    </small>
+                  </div>
+                </div>
+                {% empty %}  
+                  <div class="typing-indicator-container">
+                    <div class="typing-indicator w-fit-content rounded-custom p-2 list-group-item border shadow-sm bg-light">
+                      <span class="dot"></span>
+                      <span class="dot"></span>
+                      <span class="dot"></span>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+            <form class="card-footer bg-white border-top d-flex align-items-center" action="{% url 'chat:send_message' %}" id="SendMessageForm">
+              {% csrf_token %}
+              <input type="text" name="message" class="form-control rounded-custom me-2" placeholder="Ваше питання...">
+              <button type="submit" class="btn btn-orange rounded-circle d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
+                <i class="bi bi-send"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div id="PhoneCircle" class="position-fixed d-flex align-items-center" style="z-index: 9999;">
+          <div id="PhoneBadge" class="badge rounded-pill bg-orange me-3 p-2 px-3">+380000000000</div>
+          <button id="PhoneButton" class="btn btn-orange rounded-circle shadow d-flex justify-content-center align-items-center zoomIn" style="width: 60px; height: 60px; font-size: 24px;">
+              <i class="bi bi-chat-fill"></i>
+          </button>
+        </div>
+    </main>
+
+    <!-- Bootstrap JS Bundle (с Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
+
+    <!-- Дополнительные JS -->
+    {% block extra_js %}{% endblock %}
+    
+    <script src="{% static "js/scripts.js" %}"></script>
+</body>
+</html>

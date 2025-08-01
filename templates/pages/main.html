@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}PFB Typography{% endblock %}
+
+{% block content %}
+<!-- Карусель новинок -->
+{% if new_banners.count > 0 %}
+<div class="bg-body-secondary">
+<section class="container p-0">
+    <div id="newProductsCarousel" class="carousel slide mb-4 mt-3 bg-white" data-bs-ride="carousel" style="max-height: 557px;">
+        <!-- Индикаторы карусели -->
+        <div class="carousel-indicators" style="margin-bottom: 0 !important;">
+            {% for banner in new_banners %}
+            <button type="button" data-bs-target="#newProductsCarousel" data-bs-slide-to="{{ forloop.counter0 }}"
+                class="{% if forloop.first %}active{% endif %}" {% if forloop.first %}aria-current="true"{% endif %}
+                aria-label="Slide {{ forloop.counter }}"></button>
+            {% endfor %}
+        </div>
+        
+        <!-- Слайды карусели -->
+        <div class="carousel-inner h-100  rounded-custom border border-2">
+            {% for banner in new_banners %}
+            <div class="carousel-item h-100 {% if forloop.first %}active{% endif %}" style="height: 32.5rem;">
+                <div class="d-flex h-100 w-100 align-items-center justify-content-center">
+                    <img src="{{ banner.image.url }}" class="d-block w-100" alt="{{ banner.title }}">
+                </div>
+                <div class="carousel-caption h-100 text-start top-0 d-flex flex-column justify-content-center" style="left: 12%; width: 30%;">
+                    <h3 class="mb-2"><strong>{{ banner.title }}</strong></h3>
+                    <h5 class="mb-4">{{ banner.text|striptags|truncatechars:130 }}</h5>
+                    <a href="{{ banner.link }}" class="btn btn-outline-light rounded-custom w-fit-content">Докладніше</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Кнопки навигации -->
+        <button class="carousel-control-prev" type="button" style="opacity: 1 !important;" data-bs-target="#newProductsCarousel" data-bs-slide="prev">
+            <div class="rounded-circle bg-light p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#000" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+                </svg>
+                <span class="visually-hidden">Попередній</span>
+            </div>
+        </button>
+        <button class="carousel-control-next" style="opacity: 1 !important;" type="button" data-bs-target="#newProductsCarousel" data-bs-slide="next">
+            <div class="rounded-circle bg-light p-2">
+                <svg style="transform: scaleX(-1);" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#000" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+                </svg>
+                <span class="visually-hidden">Наступний</span>
+            </div>
+        </button>
+    </div>
+</section>
+</div>
+{% endif %}
+
+<div id="MainLinks" class="d-flex justify-content-center flex-wrap gap-3 mb-4 position-relative" style="z-index: 1 !important;">
+  <a href="{% url 'portfolio' %}" class="btn btn-outline-orange slideInUp">Портфоліо</a>
+  <a href="{% url 'terms_of_use' %}" class="btn btn-outline-orange slideInUp" style="animation-delay: 0.04s;">Умови використання</a>
+  <a href="{% url 'pay_delivery' %}" class="btn btn-outline-orange slideInUp" style="animation-delay: 0.08s;">Оплата / Доставка</a>
+  <a href="{% url 'return_policy' %}" class="btn btn-outline-orange slideInUp" style="animation-delay: 0.12s;">Обмін і повернення товару</a>
+  <a href="{% url 'question_answer' %}" class="btn btn-outline-orange slideInUp" style="animation-delay: 0.16s;">Питання-Відповідь</a>
+  <a href="{% url 'about_us' %}" class="btn btn-outline-orange slideInUp" style="animation-delay: 0.2s;">Про нас</a>
+  <a href="#ContactInfo" class="btn btn-outline-orange slideInUp pulseTargetElemOnclick" style="animation-delay: 0.24s;">Контакти</a>
+</div>
+
+<section class="border-top border-3 bg-light py-4 mt-3 position-relative  rounded-custom" style="z-index: 10 !important;">
+  <div class="container">
+    <h2 class="fw-bold mb-4">Популярні товари</h2>
+
+    <!-- Меню категорий -->
+    <ul class="nav nav-tabs mb-4" role="tablist">
+      {% for category in popular_categories %}
+        <li class="nav-item" role="presentation">
+          <a class="nav-link {% if target_category.slug == category.slug %}active{% else %}text-secondary{% endif %}" 
+             href="?category={{ category.slug }}"
+             role="tab"
+             aria-selected="{% if target_category.slug == category.slug %}true{% else %}false{% endif %}">
+            {{ category.title }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+
+    <!-- Горизонтальный скролл карточек -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4 mb-5">
+      {% for service in target_category.services.all %}
+      <div class="col">
+        <div class="card d-flex justify-content-between shadow-sm border-2 h-100 px-2 position-relative mb-3 {% if not service.is_active %}opacity-50{% endif %} zoomIn" style="animation-delay: 0.{{forloop.counter0}}s;">
+  
+            <div class="image-wrapper d-flex align-items-center justify-content-center bg-white">
+                <img src="{{ service.image.url }}" class="card-img-top img-fluid" alt="{{ service.title }}"
+                    onerror="this.src='{% static 'images/no-image.png' %}'">
+            </div>
+
+            <div class="card-body d-flex flex-column" style="flex: unset !important;">
+                <a href="{% url 'catalog:service_detail' service.slug %}" class="card-title mb-1 h5 text-decoration-none text-dark">{{ service.title }}</a>
+                <p class="card-text text-muted mb-2">{{ service.description|striptags|truncatechars:80 }}</p>
+
+                {% if service.is_active %}
+                <p class="fw-bold mb-2">
+                    от {{ service.price_from|floatformat:2 }} ₴
+                </p>
+                <a href="{% url 'catalog:service_detail' service.slug %}" class="btn btn-outline-orange btn-sm w-100">
+                    Замовити
+                </a>
+                {% else %}
+                <p class="fw-bold mb-2 text-secondary">
+                    от {{ service.price_from|floatformat:2 }} ₴
+                </p>
+                <a href="{% url 'catalog:service_detail' service.slug %}" class="btn btn-outline-secondary btn-sm w-100" disabled>
+                    Недоступно
+                </a>
+                {% endif %}
+            </div>
+
+            {% if not service.is_active %}
+                <div class="position-absolute top-0 start-0 bg-danger text-white px-2 py-1 small">
+                Недоступно
+                </div>
+            {% endif %}
+        </div>
+      </div>
+      {% empty %}
+           <p>Нема послуг цієї категорії.</p>
+      {% endfor %}
+    </div>
+
+    <h4 class="fw-bold mb-3 pb-2 border-bottom border-2 mx-auto w-100 text-center" style="max-width: 350px !important;">На чому ми працюємо</h4>
+
+    <section class="container border-top border-3 mb-5 pt-1 position-relative">
+
+        <!-- Стрілка вліво -->
+        <button class="btn btn-light position-absolute top-50 start-0 translate-middle-y shadow"
+                style="z-index: 2;" onclick="scrollSlider(-1)">
+            <i class="bi bi-chevron-left fs-4"></i>
+        </button>
+
+        <!-- Стрілка вправо -->
+        <button class="btn btn-light position-absolute top-50 end-0 translate-middle-y shadow"
+                style="z-index: 2;" onclick="scrollSlider(1)">
+            <i class="bi bi-chevron-right fs-4"></i>
+        </button>
+
+        <!-- Слайдер -->
+        <div id="work-slider" class="overflow-hidden">
+            <div class="d-flex flex-nowrap gap-3 py-3 px-2" style="scroll-behavior: smooth;">
+
+            <!-- Панель -->
+            <div class="flex-shrink-0 fadeInUp" style="width: 250px;">
+                <div class="p-3 card-hover-effect blur-opacity-effect rounded-custom h-100 text-center bg-white shadow-sm">
+                <img src="{% static 'images/portfolio/sample1.webp' %}" class="img-fluid rounded-circle border border-3 border-warning mb-3"
+                    style="width: 100px; height: 100px; object-fit: cover;" alt="Офсетний друк">
+                <h6 class="fw-bold text-dark">Офсетний друк</h6>
+                <p class="text-muted small">Ідеальний для великих тиражів поліграфії з високою якістю передачі кольору.</p>
+                </div>
+            </div>
+
+            <!-- Панель -->
+            <div class="flex-shrink-0 fadeInUp" style="width: 250px; animation-delay: 0.2s">
+                <div class="p-3 blur-opacity-effect rounded-custom h-100 text-center bg-white shadow-sm">
+                <img src="{% static 'images/portfolio/sample1.webp' %}" class="img-fluid rounded-circle border border-3 border-warning mb-3"
+                    style="width: 100px; height: 100px; object-fit: cover;" alt="Цифровий друк">
+                <h6 class="fw-bold text-dark">Цифровий друк</h6>
+                <p class="text-muted small">Швидкий друк для невеликих тиражів: етикетки, листівки, персоналізація.</p>
+                </div>
+            </div>
+
+            <div class="flex-shrink-0 fadeInUp" style="width: 250px; animation-delay: 0.4s">
+                <div class="p-3 blur-opacity-effect rounded-custom h-100 text-center bg-white shadow-sm">
+                <img src="{% static 'images/portfolio/sample1.webp' %}" class="img-fluid rounded-circle border border-3 border-warning mb-3"
+                    style="width: 100px; height: 100px; object-fit: cover;" alt="УФ-друк">
+                <h6 class="fw-bold text-dark">УФ-друк</h6>
+                <p class="text-muted small">Нанесення зображення на пластик, дерево, скло з миттєвим затвердінням фарби.</p>
+                </div>
+            </div>
+
+            <div class="flex-shrink-0 fadeInUp" style="width: 250px; animation-delay: 0.6s">
+                <div class="p-3 blur-opacity-effect rounded-custom h-100 text-center bg-white shadow-sm">
+                <img src="{% static 'images/portfolio/sample1.webp' %}" class="img-fluid rounded-circle border border-3 border-warning mb-3"
+                    style="width: 100px; height: 100px; object-fit: cover;" alt="Плотерна різка">
+                <h6 class="fw-bold text-dark">Плотерна різка</h6>
+                <p class="text-muted small">Висічка етикеток, стікерів, плівки з високою точністю.</p>
+                </div>
+            </div>
+
+            <div class="flex-shrink-0 fadeInUp" style="width: 250px; animation-delay: 0.8s">
+                <div class="p-3 blur-opacity-effect rounded-custom h-100 text-center bg-white shadow-sm">
+                <img src="{% static 'images/portfolio/sample1.webp' %}" class="img-fluid rounded-circle border border-3 border-warning mb-3"
+                    style="width: 100px; height: 100px; object-fit: cover;" alt="Тиснення">
+                <h6 class="fw-bold text-dark">Тиснення</h6>
+                <p class="text-muted small">Додає рельєфності — елегантний вигляд логотипів чи написів.</p>
+                </div>
+            </div>
+
+            <div class="flex-shrink-0" style="width: 250px;">
+                <div class="p-3 blur-opacity-effect rounded-custom h-100 text-center bg-white shadow-sm">
+                <img src="{% static 'images/portfolio/sample1.webp' %}" class="img-fluid rounded-circle border border-3 border-warning mb-3"
+                    style="width: 100px; height: 100px; object-fit: cover;" alt="Ламінація">
+                <h6 class="fw-bold text-dark">Ламінація</h6>
+                <p class="text-muted small">Захист і блиск для візиток, обкладинок, меню.</p>
+                </div>
+            </div>
+
+            </div>
+        </div>
+    </section>
+
+    <h4 class="fw-bold mb-3 pb-2 border-bottom border-2 mx-auto w-100 text-center" style="max-width: 350px !important;">З ким ми працюємо</h4>
+
+    <section class="container mb-5">
+        <div class="d-flex flex-wrap justify-content-center align-items-center gap-4">
+            <div class="text-center zoomIn" style="animation-delay: 1.05s">
+            <img src="{% static 'images/portfolio/sample1.webp' %}" class="rounded-circle border border-warning border-3 scale-hover" style="width: 100px; height: 100px; object-fit: cover;" alt="Клієнт 1">
+            <p class="mt-2 mb-0 small text-muted">Ресторани</p>
+            </div>
+            <div class="text-center zoomIn" style="animation-delay: 0.9s">
+            <img src="{% static 'images/portfolio/sample1.webp' %}" class="rounded-circle border border-warning border-3 scale-hover" style="width: 100px; height: 100px; object-fit: cover;" alt="Клієнт 2">
+            <p class="mt-2 mb-0 small text-muted">Косметичні бренди</p>
+            </div>
+            <div class="text-center zoomIn" style="animation-delay: 0.75s">
+            <img src="{% static 'images/portfolio/sample1.webp' %}" class="rounded-circle border border-warning border-3 scale-hover" style="width: 100px; height: 100px; object-fit: cover;" alt="Клієнт 3">
+            <p class="mt-2 mb-0 small text-muted">Дизайнери</p>
+            </div>
+            <div class="text-center zoomIn" style="animation-delay: 0.6s">
+            <img src="{% static 'images/portfolio/sample1.webp' %}" class="rounded-circle border border-warning border-3 scale-hover" style="width: 100px; height: 100px; object-fit: cover;" alt="Клієнт 4">
+            <p class="mt-2 mb-0 small text-muted">Агенції</p>
+            </div>
+            <div class="text-center zoomIn" style="animation-delay: 0.45s">
+            <img src="{% static 'images/portfolio/sample1.webp' %}" class="rounded-circle border border-warning border-3 scale-hover" style="width: 100px; height: 100px; object-fit: cover;" alt="Клієнт 1">
+            <p class="mt-2 mb-0 small text-muted">Ресторани</p>
+            </div>
+            <div class="text-center zoomIn" style="animation-delay: 0.3s">
+            <img src="{% static 'images/portfolio/sample1.webp' %}" class="rounded-circle border border-warning border-3 scale-hover" style="width: 100px; height: 100px; object-fit: cover;" alt="Клієнт 2">
+            <p class="mt-2 mb-0 small text-muted">Косметичні бренди</p>
+            </div>
+            <div class="text-center zoomIn" style="animation-delay: 0.15s">
+            <img src="{% static 'images/portfolio/sample1.webp' %}" class="rounded-circle border border-warning border-3 scale-hover" style="width: 100px; height: 100px; object-fit: cover;" alt="Клієнт 3">
+            <p class="mt-2 mb-0 small text-muted">Дизайнери</p>
+            </div>
+            <div class="text-center zoomIn">
+            <img src="{% static 'images/portfolio/sample1.webp' %}" class="rounded-circle border border-warning border-3 scale-hover" style="width: 100px; height: 100px; object-fit: cover;" alt="Клієнт 4">
+            <p class="mt-2 mb-0 small text-muted">Агенції</p>
+            </div>
+        </div>
+    </section>
+
+    <h4 class="fw-bold mb-3 pb-2 border-bottom border-2 mx-auto w-100 text-center" style="max-width: 350px !important;">Новини та події</h4>
+
+    <div class="card border-0 static shadow-none mb-4 overflow-hidden" style="min-height: 220px;">
+        <div class="row g-0 h-100">
+            
+            {% if news_about_store.image %}
+            <div class="col-md-4 d-flex align-items-stretch border-end border-2">
+                <div class="ratio ratio-1x1">
+                    <img src="{{ news_about_store.image.url }}" class="w-100 object-fit-cover" alt="{{ news_about_store.title }}">
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="col-md-8 d-flex flex-column justify-content-between">
+            <div class="card-body py-3 px-4 d-flex flex-column">
+                <h4 class="card-title fw-semibold mb-4">{{ news_about_store.title }}</h4>
+
+                <div class="card-text overflow-hidden">
+                {{ news_about_store.content|safe|truncatechars:200 }}
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                {% if news_about_store.created_at %}
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-calendar4-week me-1"></i>{{ news_about_store.created_at|date:"d.m.Y" }}
+                </p>
+                {% endif %}
+
+                <a href="{% url 'news:view_news' news_about_store.slug %}" class="btn btn-sm btn-outline-orange">
+                    Читати детальніше
+                </a>
+                </div>
+
+                <!-- Блок "Читайте також" прямо в карточке -->
+                <div class="border-top pt-3">
+                    <h6 class="mb-2">Читайте також</h6>
+                    <ul class="list-unstyled mb-3">
+                        {% for item in recent_news %}<li class="mb-1">{{ item.created_at }} — <a class="text-decoration-none text-secondary" href="{% url 'news:view_news' item.slug %}">{{ item.title }}</a></li>{% endfor %}
+                    </ul>
+                    <a href="{% url 'news:main_news' %}" class="btn btn-sm btn-outline-orange">
+                        Усі новини
+                    </a>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const Carousel = document.getElementById('newProductsCarousel');
+
+    function ResizeCarousel() {
+        const CarouselImage = document.querySelector('.carousel-item.active img');
+
+        if (Carousel && CarouselImage) {
+            Carousel.style.height = CarouselImage.offsetHeight + 'px';
+        }
+    }
+    window.addEventListener('resize', ResizeCarousel);
+    window.addEventListener('load', ResizeCarousel);
+    Carousel.addEventListener('slid.bs.carousel', ResizeCarousel);
+
+    function scrollSlider(direction) {
+        const slider = document.getElementById('work-slider');
+        const scrollAmount = 270; 
+        slider.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+    }
+</script>
+{% endblock %}
